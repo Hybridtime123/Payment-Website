@@ -593,23 +593,6 @@
           <div class="method">
             <div class="method-left">
               <div class="method-top">
-                <span class="tag">GOPAY</span>
-                <span class="method-name">Gopay Transfer</span>
-              </div>
-              <div class="account">
-                <span class="number">085257623929</span>
-                <span class="name">A.N: m******* f******</span>
-              </div>
-            </div>
-            <button class="btn btn-sm" onclick="copyText('085257623929', 'Nomor Gopay')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Salin Nomor
-            </button>
-          </div>
-
-          <div class="method">
-            <div class="method-left">
-              <div class="method-top">
                 <span class="tag">DANA</span>
                 <span class="method-name">Dana Transfer</span>
               </div>
@@ -619,6 +602,40 @@
               </div>
             </div>
             <button class="btn btn-sm" onclick="copyText('081383327506', 'Nomor Dana')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Salin Nomor
+            </button>
+          </div>
+
+          <div class="method">
+            <div class="method-left">
+              <div class="method-top">
+                <span class="tag">DANA</span>
+                <span class="method-name">Dana Transfer 2</span>
+              </div>
+              <div class="account">
+                <span class="number">085880681643</span>
+                <span class="name">A.N: n**** n****** p****</span>
+              </div>
+            </div>
+            <button class="btn btn-sm" onclick="copyText('085880681643', 'Nomor Dana Baru')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Salin Nomor
+            </button>
+          </div>
+
+          <div class="method">
+            <div class="method-left">
+              <div class="method-top">
+                <span class="tag">GOPAY</span>
+                <span class="method-name">Gopay Transfer</span>
+              </div>
+              <div class="account">
+                <span class="number">085257623929</span>
+                <span class="name">A.N: m******* f******</span>
+              </div>
+            </div>
+            <button class="btn btn-sm" onclick="copyText('085257623929', 'Nomor Gopay')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               Salin Nomor
             </button>
@@ -704,11 +721,11 @@
 
   <script>
     const quotes = [
-      "Dunia sementara, epep selamanya",
-      "TF-nya lebihin pls biar gw cepet kaya",
-      "Lagi error? ganti payment saja",
-      "Makasih udh buy di gw",
-      "Ada masalah? wa +62-852-5762-3929"
+      "Kepercayaan Anda adalah prioritas utama kami.",
+      "Transaksi cepat, aman, & terproses otomatis.",
+      "Satu klik praktis untuk kemudahan pembayaran.",
+      "Terima kasih telah berbelanja di Fadhil Store!",
+      "Layanan prima, siap sedia melayani Anda 24 jam."
     ];
 
     let quoteIndex = 0;
@@ -768,6 +785,7 @@
       `;
     }
 
+    // Fungsi salin handal untuk Mobile WebView / IFrame
     function copyText(text, label = "Teks") {
       const textArea = document.createElement("textarea");
       textArea.value = text;
@@ -814,4 +832,4 @@
     }
   </script>
 </body>
-            </html>
+</html>
