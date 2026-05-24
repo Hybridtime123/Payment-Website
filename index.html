@@ -45,9 +45,8 @@
 
     .hero {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1fr;
       gap: 20px;
-      align-items: stretch;
       margin-bottom: 20px;
     }
 
@@ -91,41 +90,6 @@
       max-width: 58ch;
       line-height: 1.65;
       font-size: 15px;
-    }
-
-    .hero-side {
-      display: grid;
-      grid-template-rows: 1fr auto;
-      gap: 16px;
-    }
-
-    .profile {
-      padding: 20px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      object-fit: cover;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--line);
-      flex: 0 0 auto;
-    }
-
-    .profile h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .profile p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
     }
 
     .stats {
@@ -280,7 +244,7 @@
 
     .qris-grid {
       display: grid;
-      grid-template-columns: 1fr 280px;
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
       align-items: stretch;
     }
@@ -320,19 +284,6 @@
       line-height: 1.6;
     }
 
-    .qris-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .qris-label strong {
-      font-size: 15px;
-    }
-
     .hint {
       color: var(--muted);
       font-size: 13px;
@@ -370,71 +321,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.66);
-      display: none;
-      place-items: center;
-      padding: 18px;
-      z-index: 100;
-    }
-
-    .modal.show { display: grid; }
-
-    .modal-card {
-      width: min(92vw, 420px);
-      background: #0f1530;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .modal-head strong { font-size: 16px; }
-    .close {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.08);
-      color: white;
-      border: 0;
-      font-size: 18px;
-    }
-
-    .modal-body {
-      padding: 16px;
-    }
-
-    .modal-body img {
-      width: 100%;
-      display: block;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .empty {
-      display: grid;
-      place-items: center;
-      min-height: 280px;
-      color: var(--muted);
-      text-align: center;
-      padding: 18px;
-      border-radius: 18px;
-      border: 1px dashed rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.03);
-    }
-
     @media (max-width: 820px) {
-      .hero,
       .qris-grid {
         grid-template-columns: 1fr;
       }
@@ -477,31 +364,6 @@
             halaman pembayaran yang clean, simpel, dan gampang dipake.
             tinggal pilih metode, copy nomor, terus beres.
           </p>
-        </div>
-
-        <div class="hero-side">
-          <div class="panel profile">
-            <img class="avatar" src="logo.png" alt="logo" onerror="this.style.display='none'">
-            <div>
-              <h2>fadhil seturr</h2>
-              <p>pembayaran cepat, rapi, dan enak diliat. gak perlu gaya berlebihan.</p>
-            </div>
-          </div>
-
-          <div class="stats">
-            <div class="stat">
-              <b>2</b>
-              <span>metode utama</span>
-            </div>
-            <div class="stat">
-              <b>1</b>
-              <span>qris scan</span>
-            </div>
-            <div class="stat">
-              <b>24/7</b>
-              <span>siap dipake</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -548,42 +410,27 @@
           </div>
         </div>
 
-        <p class="hint">
-          kirim bukti pembayaran biar prosesnya lancar.
-        </p>
+        <p class="hint">kirim bukti pembayaran biar prosesnya lancar.</p>
       </section>
 
       <section class="panel section">
         <div class="section-head">
           <div>
             <h3>pembayaran qris</h3>
-            <p>scan langsung atau buka preview full.</p>
+            <p>2 qris langsung ditampilin.</p>
           </div>
-          <button class="btn btn-primary" onclick="openModal()">lihat qris</button>
         </div>
 
         <div class="qris-grid">
           <div class="qris-box">
             <div class="qris-preview">
-              <img id="qrisImage" src="qris.png" alt="qris" onerror="showQrisFallback()">
-              <div id="qrisFallback" class="qris-fallback" style="display:none">
-                qris.png belum ada.<br>
-                taruh file qris kamu di folder yang sama sama index.html.
-              </div>
-            </div>
-            <div class="qris-label">
-              <strong>qris static</strong>
-              <button class="btn" onclick="copyText('qris', 'info qris')">salin info</button>
+              <img src="qris1.png" alt="qris 1" onerror="this.outerHTML='<div class=&quot;qris-fallback&quot;>qris1.png belum ada.<br>upload file qris1 ke folder project dulu.</div>'">
             </div>
           </div>
 
           <div class="qris-box">
-            <strong style="display:block; font-size:16px; margin-bottom:10px;">cara pakai</strong>
-            <div class="hint" style="margin:0">
-              1. buka halaman ini<br><br>
-              2. pilih gopay, dana, atau qris<br><br>
-              3. kirim bukti transfer<br><br>
-              4. selesai
+            <div class="qris-preview">
+              <img src="qris2.png" alt="qris 2" onerror="this.outerHTML='<div class=&quot;qris-fallback&quot;>qris2.png belum ada.<br>upload file qris2 ke folder project dulu.</div>'">
             </div>
           </div>
         </div>
@@ -594,18 +441,6 @@
   </div>
 
   <div id="toast" class="toast">disalin</div>
-
-  <div id="modal" class="modal" onclick="closeOnBackdrop(event)">
-    <div class="modal-card">
-      <div class="modal-head">
-        <strong>qris</strong>
-        <button class="close" onclick="closeModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <img src="qris.png" alt="qris full" onerror="this.outerHTML='<div class=&quot;empty&quot;>qris.png belum ketemu.<br>upload file qris ke folder project dulu.</div>'">
-      </div>
-    </div>
-  </div>
 
   <script>
     function copyText(text, label = "teks") {
@@ -622,25 +457,6 @@
       toast.classList.add("show");
       clearTimeout(window.toastTimer);
       window.toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
-    }
-
-    function openModal() {
-      document.getElementById("modal").classList.add("show");
-    }
-
-    function closeModal() {
-      document.getElementById("modal").classList.remove("show");
-    }
-
-    function closeOnBackdrop(e) {
-      if (e.target.id === "modal") closeModal();
-    }
-
-    function showQrisFallback() {
-      const img = document.getElementById("qrisImage");
-      const fallback = document.getElementById("qrisFallback");
-      img.style.display = "none";
-      fallback.style.display = "grid";
     }
   </script>
 </body>
