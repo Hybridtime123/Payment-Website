@@ -5,934 +5,684 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fadhil Store - Payment Gateway</title>
   <style>
-    /* VARIABLES & THEME SYSTEM */
+    /* =========================================
+       THEME VARIABLES
+       ========================================= */
     :root {
-      /* Dark Theme Colors (Default) */
-      --bg-base: #09090b;
-      --card-bg: rgba(20, 20, 23, 0.65);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover-border: rgba(255, 255, 255, 0.2);
-      --text-primary: #ffffff;
-      --text-secondary: #a1a1aa;
-      --text-muted: #71717a;
-      --accent: #ffffff;
-      --accent-hover: #e4e4e7;
-      --accent-text: #000000;
-      --btn-bg: rgba(255, 255, 255, 0.06);
-      --btn-hover: rgba(255, 255, 255, 0.15);
-      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      --method-bg: rgba(255, 255, 255, 0.02);
-      --qris-mask: rgba(0, 0, 0, 0.8);
+      /* Dark Theme (Cosmic Universe) */
+      --bg-color: #05050a;
+      --glass-bg: rgba(15, 15, 25, 0.4);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-hover: rgba(255, 255, 255, 0.15);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
       
-      --radius-lg: 24px;
-      --radius-md: 14px;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --text-highlight: #38bdf8;
+      
+      --accent-color: #38bdf8;
+      --accent-glow: 0 0 20px rgba(56, 189, 248, 0.5);
+      --accent-btn: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      
+      --card-inner: rgba(255, 255, 255, 0.03);
+      --method-hover: rgba(56, 189, 248, 0.1);
+      
+      --qris-overlay: rgba(0, 0, 0, 0.85);
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-text: #34d399;
     }
 
     [data-theme="light"] {
-      /* Light Theme Colors */
-      --bg-base: #f4f4f5;
-      --card-bg: rgba(255, 255, 255, 0.75);
-      --card-border: rgba(255, 255, 255, 0.6);
-      --card-hover-border: rgba(0, 0, 0, 0.15);
-      --text-primary: #09090b;
-      --text-secondary: #3f3f46;
-      --text-muted: #52525b;
-      --accent: #09090b;
-      --accent-hover: #27272a;
-      --accent-text: #ffffff;
-      --btn-bg: rgba(0, 0, 0, 0.05);
-      --btn-hover: rgba(0, 0, 0, 0.12);
-      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-      --method-bg: rgba(255, 255, 255, 0.5);
-      --qris-mask: rgba(255, 255, 255, 0.9);
+      /* Light Theme (Moving Clouds & Sky) */
+      --bg-color: #60a5fa; /* Sky blue fallback */
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --glass-hover: rgba(255, 255, 255, 1);
+      --glass-shadow: 0 12px 40px 0 rgba(37, 99, 235, 0.15);
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-highlight: #2563eb;
+      
+      --accent-color: #2563eb;
+      --accent-glow: 0 5px 15px rgba(37, 99, 235, 0.3);
+      --accent-btn: linear-gradient(135deg, #3b82f6, #2563eb);
+      
+      --card-inner: rgba(255, 255, 255, 0.5);
+      --method-hover: rgba(255, 255, 255, 0.9);
+      
+      --qris-overlay: rgba(255, 255, 255, 0.9);
+      --success-bg: #d1fae5;
+      --success-text: #059669;
     }
 
-    /* GLOBAL RESET & SMOOTH TRANSITIONS */
-    * { 
-      box-sizing: border-box; 
-      transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
-    }
-    
-    html, body { 
-      height: 100%; 
+    /* =========================================
+       GLOBAL & RESET
+       ========================================= */
+    * {
+      box-sizing: border-box;
       margin: 0;
-      scroll-behavior: smooth;
+      padding: 0;
+      transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      color: var(--text-primary);
-      background-color: var(--bg-base);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       overflow-x: hidden;
       line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* ANIMATED BACKGROUNDS */
-    .bg-container {
+    /* =========================================
+       ANIMATED BACKGROUNDS
+       ========================================= */
+    #background-container {
       position: fixed;
-      inset: 0;
+      top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: -1;
       overflow: hidden;
+      pointer-events: none;
     }
 
-    /* Dark Mode Background Effect */
-    .bg-dark {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, #09090b 0%, #121214 100%);
-      opacity: 1;
-      transition: opacity 0.8s ease;
+    /* Cosmic (Dark Mode) Elements */
+    .cosmic-layer {
+      position: absolute; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #05050a 100%);
+      opacity: 1; transition: opacity 0.8s ease;
     }
-    .bg-dark::before {
-      content: "";
+    .star {
       position: absolute;
-      top: -20%;
-      left: -10%;
-      width: 60vw;
-      height: 60vw;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
+      background: white;
       border-radius: 50%;
-      animation: floatBlob 15s infinite alternate ease-in-out;
+      box-shadow: 0 0 5px white;
+      animation: twinkle linear infinite;
     }
-    .bg-dark::after {
-      content: "";
-      position: absolute;
-      bottom: -10%;
-      right: -10%;
-      width: 50vw;
-      height: 50vw;
-      background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, transparent 60%);
-      border-radius: 50%;
-      animation: floatBlob 12s infinite alternate-reverse ease-in-out;
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff, 0 0 20px var(--accent-color); }
     }
-
-    /* Light Mode Background (Taman / Garden) */
-    .bg-light {
+    .meteor {
       position: absolute;
-      inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1558285549-2a05f1dd0bf8?q=80&w=1920&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      width: 2px; height: 50px;
+      background: linear-gradient(to bottom, transparent, white);
+      transform: rotate(45deg);
+      animation: meteorFall linear infinite;
       opacity: 0;
-      transition: opacity 0.8s ease;
-      transform: scale(1.05);
     }
-    /* Overlay for readability */
-    .bg-light::after {
-      content: "";
+    @keyframes meteorFall {
+      0% { top: -50px; left: calc(100% * var(--start)); opacity: 1; }
+      100% { top: 100vh; left: calc(100% * var(--end)); opacity: 0; }
+    }
+
+    /* Sky (Light Mode) Elements */
+    .sky-layer {
+      position: absolute; width: 100%; height: 100%;
+      background: linear-gradient(180deg, #3b82f6 0%, #93c5fd 50%, #e0f2fe 100%);
+      opacity: 0; transition: opacity 0.8s ease;
+    }
+    .cloud {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.8) 100%);
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 100px;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.05));
+      animation: floatCloud linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: ''; position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50%;
+    }
+    .cloud::before { width: 50%; height: 100%; top: -40%; left: 15%; }
+    .cloud::after { width: 40%; height: 80%; top: -30%; right: 15%; }
+    
+    @keyframes floatCloud {
+      0% { transform: translateX(-150px); }
+      100% { transform: translateX(100vw); }
     }
 
-    /* Background state logic */
-    [data-theme="light"] .bg-dark { opacity: 0; }
-    [data-theme="light"] .bg-light { opacity: 1; transform: scale(1); }
+    /* Theme Switching Logic for Background */
+    [data-theme="light"] .cosmic-layer { opacity: 0; }
+    [data-theme="light"] .sky-layer { opacity: 1; }
 
-    /* ANIMATIONS */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 0.6; box-shadow: 0 0 8px #34d399; }
-      50% { opacity: 1; box-shadow: 0 0 16px #34d399, 0 0 24px #34d399; }
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    @keyframes floatBlob {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(50px, 30px) scale(1.1); }
+    /* =========================================
+       LAYOUT & GLASSMORPHISM
+       ========================================= */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 20px 40px;
+      position: relative;
+      z-index: 1;
     }
 
-    /* THEME TOGGLE BUTTON */
-    .theme-toggle {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 50;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+    .glass-panel {
+      background: var(--glass-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      color: var(--text-primary);
-      padding: 10px 18px;
-      border-radius: 999px;
-      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      border-radius: 24px;
+      padding: 35px;
+      margin-bottom: 25px;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Shine effect on panel */
+    .glass-panel::before {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+      transform: skewX(-20deg);
+      transition: 0.5s;
+    }
+    .glass-panel:hover::before { left: 200%; transition: 1s ease-in-out; }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.3s; }
+    .delay-3 { animation-delay: 0.5s; }
+
+    @keyframes slideUpFade {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================
+       HEADER & HERO
+       ========================================= */
+    .hero-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 13px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .badge-secure {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 50px;
+      background: var(--card-inner); border: 1px solid var(--glass-border);
+      font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .badge-active {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 50px;
+      background: var(--success-bg); color: var(--success-text);
+      border: 1px solid var(--success-text);
+      font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
+    }
+    .dot-pulse {
+      width: 10px; height: 10px; background-color: var(--success-text);
+      border-radius: 50%; display: block;
+      animation: pulseGreen 2s infinite;
+    }
+    @keyframes pulseGreen {
+      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
+
+    .main-title {
+      font-size: clamp(34px, 8vw, 48px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, var(--text-main), var(--text-highlight));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    .hero-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 20px; border-top: 1px solid var(--glass-border);
+      flex-wrap: wrap; gap: 15px;
+    }
+
+    .typing-container {
+      font-size: 16px; font-weight: 500; color: var(--text-muted);
+      display: flex; align-items: center;
+    }
+    .cursor {
+      display: inline-block; width: 3px; height: 18px;
+      background: var(--text-highlight); margin-left: 5px;
+      animation: blink 0.8s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .date-badge {
+      font-family: monospace; font-size: 14px; font-weight: bold;
+      padding: 8px 16px; border-radius: 8px;
+      background: var(--card-inner); border: 1px solid var(--glass-border);
+    }
+
+    /* =========================================
+       SECTION ELEMENTS
+       ========================================= */
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 30px; flex-wrap: wrap; gap: 15px;
+    }
+    .section-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
+    .section-desc { font-size: 14px; color: var(--text-muted); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px;
+      cursor: pointer; text-decoration: none; border: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-wa {
+      background: var(--accent-btn); color: #fff;
+      box-shadow: var(--accent-glow);
+    }
+    .btn-wa:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+    }
+    .btn-outline {
+      background: var(--card-inner); color: var(--text-main);
+      border: 1px solid var(--glass-border);
+    }
+    .btn-outline:hover {
+      background: var(--text-main); color: var(--bg-color);
+      transform: translateY(-3px);
+    }
+
+    /* PAYMENT METHODS LIST */
+    .method-list { display: flex; flex-direction: column; gap: 16px; }
+    .method-card {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px; border-radius: 16px;
+      background: var(--card-inner); border: 1px solid var(--glass-border);
+      position: relative; z-index: 1; overflow: hidden;
+    }
+    .method-card::after {
+      content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: var(--accent-color); transform: scaleY(0); transition: transform 0.3s;
+    }
+    .method-card:hover {
+      background: var(--method-hover); border-color: var(--text-highlight);
+      transform: translateX(8px);
+    }
+    .method-card:hover::after { transform: scaleY(1); }
+
+    .method-info { display: flex; flex-direction: column; gap: 8px; }
+    .method-tag {
+      align-self: flex-start; padding: 4px 10px; border-radius: 6px;
+      background: var(--accent-btn); color: white;
+      font-size: 11px; font-weight: 900; letter-spacing: 1px;
+    }
+    .method-name { font-size: 18px; font-weight: 800; }
+    .method-number { font-family: monospace; font-size: 20px; font-weight: bold; color: var(--text-highlight); }
+    .method-user { font-size: 14px; color: var(--text-muted); }
+
+    /* GUIDE BOX */
+    .guide-box {
+      margin-top: 30px; padding: 25px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--card-inner), transparent);
+      border: 1px dashed var(--glass-border);
+    }
+    .guide-box h4 { margin-bottom: 15px; font-size: 16px; font-weight: 800; }
+    .guide-list { padding-left: 20px; font-size: 14px; color: var(--text-muted); display: flex; flex-direction: column; gap: 12px; }
+    .guide-alert {
+      margin-top: 20px; padding: 15px; border-radius: 12px;
+      background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3);
+      color: #eab308; font-size: 13px; font-weight: 600;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+
+    /* QRIS GRID */
+    .qris-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;
+    }
+    .qris-card {
+      background: var(--card-inner); border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 25px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      transition: all 0.4s;
+    }
+    .qris-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--text-highlight);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    .qris-label { font-weight: 800; font-size: 16px; text-align: center; }
+    
+    .qris-img-container {
+      width: 100%; aspect-ratio: 1; border-radius: 16px;
+      background: #fff; padding: 10px;
+      position: relative; overflow: hidden; cursor: zoom-in;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .qris-img-container img {
+      width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s;
+    }
+    .qris-img-container:hover img { transform: scale(1.1); }
+    .qris-overlay {
+      position: absolute; inset: 0; background: var(--qris-overlay);
+      color: var(--text-main); display: flex; align-items: center; justify-content: center;
+      font-weight: bold; opacity: 0; transition: opacity 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    .qris-img-container:hover .qris-overlay { opacity: 1; }
+
+    .qris-actions { display: flex; width: 100%; gap: 10px; }
+    .qris-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+
+    .qris-fallback {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      background: var(--card-inner); padding: 20px; color: var(--text-main);
+    }
+
+    /* =========================================
+       FLOATING ELEMENTS (THEME TOGGLE & TOAST)
+       ========================================= */
+    .theme-toggle {
+      position: fixed; top: 25px; right: 25px; z-index: 100;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      backdrop-filter: blur(15px); color: var(--text-main);
+      padding: 10px 20px; border-radius: 50px;
+      display: flex; align-items: center; gap: 10px; font-weight: 700;
+      cursor: pointer; box-shadow: var(--glass-shadow);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .theme-toggle:hover {
-      transform: translateY(-3px) scale(1.05);
-      border-color: var(--card-hover-border);
+      transform: scale(1.1) rotate(5deg); border-color: var(--text-highlight);
     }
     .theme-toggle .icon-moon { display: block; }
     .theme-toggle .icon-sun { display: none; }
     [data-theme="light"] .theme-toggle .icon-moon { display: none; }
     [data-theme="light"] .theme-toggle .icon-sun { display: block; }
 
-    /* LAYOUT & CONTAINERS */
-    .wrap {
-      min-height: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 80px 16px 48px; /* Added top padding for toggle */
-      position: relative;
-      z-index: 1;
+    .toast {
+      position: fixed; bottom: 40px; left: 50%; transform: translate(-50%, 50px);
+      background: var(--accent-btn); color: #fff; padding: 15px 30px;
+      border-radius: 50px; font-weight: bold; font-size: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 999;
+      display: flex; align-items: center; gap: 10px;
     }
-
-    .page {
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* PANELS (GLASSMORPHISM) */
-    .panel {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: var(--radius-lg);
-      padding: 30px;
-      opacity: 0;
-      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      opacity: 0.5;
-    }
-
-    .panel:hover {
-      border-color: var(--card-hover-border);
-      transform: translateY(-4px);
-    }
-
-    /* HERO SECTION */
-    .badge-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: var(--btn-bg);
-      color: var(--text-primary);
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid var(--card-border);
-      letter-spacing: 0.5px;
-    }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      padding: 8px 14px;
-      border-radius: 999px;
-      letter-spacing: 0.5px;
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #34d399;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse-glow 2s infinite ease-in-out;
-    }
-
-    .title {
-      margin: 0;
-      font-size: clamp(32px, 6vw, 42px);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-muted) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0px 4px 20px rgba(0,0,0,0.1);
-    }
-
-    .dashboard-info {
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--card-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .greeting-text {
-      font-size: 15px;
-      color: var(--text-secondary);
-      display: inline-flex;
-      align-items: center;
-      flex-wrap: wrap;
-      min-height: 24px;
-      font-weight: 500;
-    }
-
-    .typing-cursor {
-      display: inline-block;
-      width: 2px;
-      height: 16px;
-      background-color: var(--accent);
-      margin-left: 6px;
-      animation: blink 0.8s infinite;
-    }
-
-    .session-date {
-      font-size: 13px;
-      font-family: monospace;
-      color: var(--text-muted);
-      background: var(--btn-bg);
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      font-weight: 600;
-    }
-
-    /* SECTION HEADERS */
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .section-title {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .section-subtitle {
-      margin: 6px 0 0 0;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      border: 1px solid var(--card-border);
-      background: var(--btn-bg);
-      color: var(--text-primary);
-      text-decoration: none;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(255,255,255,0.1), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .btn:hover {
-      background: var(--btn-hover);
-      border-color: var(--card-hover-border);
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .btn:hover::after { opacity: 1; }
-    .btn:active { transform: translateY(0) scale(0.98); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--accent-text);
-      border: none;
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
-    }
-    [data-theme="light"] .btn-primary {
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 12px 30px rgba(255, 255, 255, 0.25);
-    }
-    [data-theme="light"] .btn-primary:hover {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn-sm {
-      padding: 10px 14px;
-      font-size: 13px;
-      border-radius: 10px;
-    }
-
-    /* METHODS LIST */
-    .methods {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .method {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      border-radius: var(--radius-md);
-      background: var(--method-bg);
-      border: 1px solid var(--card-border);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .method::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-      background: var(--text-primary);
-      transform: scaleY(0);
-      transition: transform 0.3s ease;
-      transform-origin: center;
-    }
-
-    .method:hover {
-      background: var(--btn-bg);
-      border-color: var(--card-hover-border);
-      transform: translateX(5px);
-    }
-    .method:hover::before {
-      transform: scaleY(1);
-    }
-
-    .method-left { min-width: 0; }
-
-    .method-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .tag {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: var(--accent);
-      color: var(--accent-text);
-      letter-spacing: 0.5px;
-    }
-
-    .method-name {
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .account {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .number {
-      font-family: monospace;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text-primary);
-      letter-spacing: 1px;
-    }
-
-    .name {
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    /* QRIS GRID */
-    .qris-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .qris-box {
-      background: var(--method-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-      text-align: center;
-    }
-
-    .qris-box:hover { 
-      border-color: var(--card-hover-border); 
-      background: var(--btn-bg);
-    }
-
-    .qris-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-
-    .qris-preview {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #ffffff;
-      border: 4px solid var(--card-border);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    .qris-preview::after {
-      content: "🔍 Ketuk untuk Perbesar";
-      position: absolute;
-      inset: 0;
-      background: var(--qris-mask);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      backdrop-filter: blur(4px);
-    }
-
-    .qris-preview:hover::after { opacity: 1; }
-
-    .qris-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 10px;
-      display: block;
-      transition: transform 0.5s ease;
-    }
-    .qris-preview:hover img { transform: scale(1.05); }
-
-    .qris-fallback {
-      text-align: center;
-      padding: 16px;
-      color: #09090b;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    /* GUIDE BOX */
-    .guide-box {
-      background: var(--method-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-top: 20px;
-    }
-
-    .guide-box h4 {
-      margin: 0 0 14px 0;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .guide-list {
-      margin: 0;
-      padding-left: 20px;
-      font-size: 14px;
-      color: var(--text-secondary);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .hint-alert {
-      margin-top: 16px;
-      font-size: 13px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      background: var(--btn-bg);
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-    }
-    .hint-alert svg { flex-shrink: 0; margin-top: 2px; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
     /* LIGHTBOX */
     .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 100;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(10px);
     }
-
-    .lightbox.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    .lightbox.show { opacity: 1; pointer-events: auto; }
     .lightbox-content {
-      position: relative;
-      background: var(--bg-base);
-      padding: 20px;
-      border-radius: var(--radius-lg);
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      transform: scale(0.8) translateY(30px);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: 1px solid var(--card-border);
+      background: #fff; padding: 20px; border-radius: 24px; max-width: 90vw; max-height: 80vh;
+      transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-
-    .lightbox.show .lightbox-content { transform: scale(1) translateY(0); }
-
-    .lightbox-content img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-      background: #fff;
-    }
-
+    .lightbox.show .lightbox-content { transform: scale(1); }
+    .lightbox img { max-width: 100%; max-height: 60vh; border-radius: 12px; }
     .lightbox-close {
-      position: absolute;
-      top: -50px;
-      right: 0;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
+      position: absolute; top: -50px; right: 0; background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4); color: white; width: 45px; height: 45px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; cursor: pointer; transition: all 0.3s;
     }
-    .lightbox-close:hover {
-      background: white;
-      color: black;
-      transform: rotate(90deg);
-    }
+    .lightbox-close:hover { background: white; color: black; transform: rotate(90deg); }
+    .lightbox-text { text-align: center; margin-top: 20px; color: var(--bg-color); }
+    .lightbox-text h3 { font-size: 22px; font-weight: 900; }
+    .lightbox-text p { font-family: monospace; font-size: 16px; font-weight: bold; margin-top: 5px;}
 
-    .lightbox-info {
-      text-align: center;
-      margin-top: 16px;
-      color: var(--text-primary);
-    }
+    .footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; font-weight: bold; }
 
-    .lightbox-info h3 { margin: 0; font-size: 20px; font-weight: 800; }
-    .lightbox-info p { margin: 6px 0 0 0; font-size: 14px; color: var(--text-secondary); font-family: monospace; }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%) translateY(40px) scale(0.9);
-      background: var(--accent);
-      color: var(--accent-text);
-      font-weight: 700;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 999px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-size: 14px;
-      z-index: 110;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0) scale(1);
-    }
-
-    .footer {
-      padding: 12px 0 24px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 640px) {
-      .wrap { padding: 70px 12px 32px; }
-      .panel { padding: 20px; }
-      .qris-grid { grid-template-columns: 1fr; }
-      .method {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-      }
-      .method .btn { width: 100%; }
-      .badge-row, .dashboard-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .session-date { width: 100%; text-align: center; }
-      .section-head { flex-direction: column; align-items: flex-start; }
-      .section-head .btn { width: 100%; }
+    @media (max-width: 600px) {
+      .container { padding: 90px 15px 30px; }
+      .glass-panel { padding: 25px 20px; }
+      .method-card { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .method-card .btn { width: 100%; }
+      .section-header .btn { width: 100%; }
+      .theme-toggle { top: 15px; right: 15px; padding: 8px 15px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background Layers -->
-  <div class="bg-container">
-    <div class="bg-dark"></div>
-    <div class="bg-light"></div>
+  <!-- Animated Background -->
+  <div id="background-container">
+    <div class="cosmic-layer" id="cosmic-bg"></div>
+    <div class="sky-layer" id="sky-bg"></div>
   </div>
 
   <!-- Theme Switcher -->
-  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
-    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
     <span id="theme-label">Ganti Mode</span>
   </button>
 
-  <div class="wrap">
-    <main class="page">
-      
-      <section class="panel hero-main" style="animation-delay: 0.1s;">
-        <div class="badge-row">
-          <div class="badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Secured Gateway
-          </div>
-          <div class="badge-status">
-            <span class="pulse-dot"></span>
-            Web Aktif (24 Jam)
-          </div>
+  <div class="container">
+    
+    <!-- HERO SECTION -->
+    <section class="glass-panel delay-1">
+      <div class="hero-header">
+        <div class="badge-secure">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Secured Gateway
         </div>
-        <h1 class="title">Fadhil Setur Payment</h1>
-        
-        <div class="dashboard-info">
-          <div class="greeting-text">
-            <span id="greeting-time"></span>&nbsp;<span id="typing-text"></span><span class="typing-cursor"></span>
-          </div>
-          <div class="session-date" id="date-display">
-            Minggu, 24 Mei 2026
-          </div>
+        <div class="badge-active">
+          <span class="dot-pulse"></span>
+          Web Aktif (24 Jam)
         </div>
-      </section>
-
-      <section class="panel" style="animation-delay: 0.2s;">
-        <div class="section-head">
-          <div>
-            <h3 class="section-title">Metode Transfer</h3>
-            <p class="section-subtitle">Pilih metode transfer, salin nomor, dan kirim bukti bayar ke admin</p>
-          </div>
-          <a class="btn btn-primary" href="https://wa.me/6285257623929" target="_blank" rel="noopener">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7(8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-            Konfirmasi WA
-          </a>
-        </div>
-
-        <div class="methods">
-          <div class="method">
-            <div class="method-left">
-              <div class="method-top">
-                <span class="tag">DANA</span>
-                <span class="method-name">Dana Transfer</span>
-              </div>
-              <div class="account">
-                <span class="number">081383327506</span>
-                <span class="name">A.N: n*** c******</span>
-              </div>
-            </div>
-            <button class="btn btn-sm" onclick="copyText('081383327506', 'Nomor Dana')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Salin Nomor
-            </button>
-          </div>
-
-          <div class="method">
-            <div class="method-left">
-              <div class="method-top">
-                <span class="tag">DANA</span>
-                <span class="method-name">Dana Transfer 2</span>
-              </div>
-              <div class="account">
-                <span class="number">085880681643</span>
-                <span class="name">A.N: n**** n****** p****</span>
-              </div>
-            </div>
-            <button class="btn btn-sm" onclick="copyText('085880681643', 'Nomor Dana Baru')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Salin Nomor
-            </button>
-          </div>
-
-          <div class="method">
-            <div class="method-left">
-              <div class="method-top">
-                <span class="tag">GOPAY</span>
-                <span class="method-name">Gopay Transfer</span>
-              </div>
-              <div class="account">
-                <span class="number">085257623929</span>
-                <span class="name">A.N: m******* f******</span>
-              </div>
-            </div>
-            <button class="btn btn-sm" onclick="copyText('085257623929', 'Nomor Gopay')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Salin Nomor
-            </button>
-          </div>
-        </div>
-
-        <div class="guide-box">
-          <h4>Cara Pembayaran:</h4>
-          <ol class="guide-list">
-            <li>Salin nomor tujuan transfer diatas (atau gunakan QRIS di bawah)</li>
-            <li>Lakukan transfer via m-banking atau e-wallet dengan nominal yang sesuai</li>
-            <li>Klik tombol <strong>"Konfirmasi WA"</strong> untuk mengirim bukti pembayaran</li>
-          </ol>
-          <div class="hint-alert">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            Proses verifikasi manual, mohon menunggu sampai admin konfirmasi (kurang dari 1 jam)
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" style="animation-delay: 0.3s;">
-        <div class="section-head">
-          <div>
-            <h3 class="section-title">QRIS</h3>
-            <p class="section-subtitle">Scan via aplikasi pembayaran atau klik untuk memperbesar penuh</p>
-          </div>
-        </div>
-
-        <div class="qris-grid">
-          <div class="qris-box">
-            <div class="qris-label">QRIS Utama - Fadhil Store</div>
-            <div class="qris-preview" onclick="openLightbox('qris1.png', 'Fadhil Store', 'ID1025414765624')">
-              <img src="qris1.png" alt="QRIS Fadhil Store" onerror="showFallback(this, 'QRIS 1 Utama')">
-            </div>
-            <div style="display:flex; gap:10px; width:100%;">
-              <button class="btn btn-sm" style="flex:1;" onclick="openLightbox('qris1.png', 'Fadhil Store', 'ID1025414765624')">
-                🔍 Lihat QRIS
-              </button>
-              <button class="btn btn-sm" onclick="copyText('ID1025414765624', 'NMID Fadhil Store')">
-                Salin NMID
-              </button>
-            </div>
-          </div>
-
-          <div class="qris-box">
-            <div class="qris-label">QRIS 2 - Warung Stok Mas Ses</div>
-            <div class="qris-preview" onclick="openLightbox('qris2.png', 'QRIS Alternatif', 'ID1026494189180')">
-              <img src="qris2.png" alt="QRIS Alternatif" onerror="showFallback(this, 'QRIS 2 Alternatif')">
-            </div>
-            <div style="display:flex; gap:10px; width:100%;">
-              <button class="btn btn-sm" style="flex:1;" onclick="openLightbox('qris2.png', 'QRIS Alternatif', 'ID1026494189180')">
-                🔍 Lihat QRIS
-              </button>
-              <button class="btn btn-sm" onclick="copyText('ID1026494189180', 'NMID Alternatif')">
-                Salin NMID
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div class="footer">
-        © By Fadhil | Last Update : 20:11 24 May 2026 | Contact : +62 852-5762-3929
       </div>
-    </main>
+      
+      <h1 class="main-title">Fadhil Setur Payment</h1>
+      
+      <div class="hero-footer">
+        <div class="typing-container">
+          <span id="greeting-time"></span>&nbsp;<span id="typing-text"></span><span class="cursor"></span>
+        </div>
+        <div class="date-badge" id="date-display">
+          Minggu, 24 Mei 2026
+        </div>
+      </div>
+    </section>
+
+    <!-- METHODS SECTION -->
+    <section class="glass-panel delay-2">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Metode Transfer</h2>
+          <p class="section-desc">Pilih metode transfer, salin nomor, dan kirim bukti bayar ke admin</p>
+        </div>
+        <a class="btn btn-wa" href="https://wa.me/6285257623929" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7(8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Konfirmasi WA
+        </a>
+      </div>
+
+      <div class="method-list">
+        <!-- Dana 1 -->
+        <div class="method-card">
+          <div class="method-info">
+            <span class="method-tag">DANA</span>
+            <span class="method-name">Dana Transfer</span>
+            <span class="method-number">081383327506</span>
+            <span class="method-user">A.N: n*** c******</span>
+          </div>
+          <button class="btn btn-outline" onclick="copyText('081383327506', 'Nomor Dana')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Salin Nomor
+          </button>
+        </div>
+
+        <!-- Dana 2 -->
+        <div class="method-card">
+          <div class="method-info">
+            <span class="method-tag">DANA</span>
+            <span class="method-name">Dana Transfer 2</span>
+            <span class="method-number">085880681643</span>
+            <span class="method-user">A.N: n**** n****** p****</span>
+          </div>
+          <button class="btn btn-outline" onclick="copyText('085880681643', 'Nomor Dana Baru')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Salin Nomor
+          </button>
+        </div>
+
+        <!-- Gopay -->
+        <div class="method-card">
+          <div class="method-info">
+            <span class="method-tag">GOPAY</span>
+            <span class="method-name">Gopay Transfer</span>
+            <span class="method-number">085257623929</span>
+            <span class="method-user">A.N: m******* f******</span>
+          </div>
+          <button class="btn btn-outline" onclick="copyText('085257623929', 'Nomor Gopay')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Salin Nomor
+          </button>
+        </div>
+      </div>
+
+      <div class="guide-box">
+        <h4>Cara Pembayaran:</h4>
+        <ol class="guide-list">
+          <li>Salin nomor tujuan transfer diatas (atau gunakan QRIS di bawah)</li>
+          <li>Lakukan transfer via m-banking atau e-wallet dengan nominal yang sesuai</li>
+          <li>Klik tombol <strong>"Konfirmasi WA"</strong> untuk mengirim bukti pembayaran</li>
+        </ol>
+        <div class="guide-alert">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div>Proses verifikasi manual, mohon menunggu sampai admin konfirmasi (kurang dari 1 jam)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QRIS SECTION -->
+    <section class="glass-panel delay-3">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">QRIS</h2>
+          <p class="section-desc">Scan via aplikasi pembayaran atau klik untuk memperbesar penuh</p>
+        </div>
+      </div>
+
+      <div class="qris-grid">
+        <!-- QRIS 1 -->
+        <div class="qris-card">
+          <div class="qris-label">QRIS Utama - Fadhil Store</div>
+          <div class="qris-img-container" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this)">
+            <img src="qris1.png" alt="QRIS Fadhil Store" onerror="showFallback(this, 'qris1.png')">
+            <div class="qris-overlay">🔍 Perbesar</div>
+          </div>
+          <div class="qris-actions">
+            <button class="btn btn-outline" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
+            <button class="btn btn-outline" onclick="copyText('ID1025414765624', 'NMID Fadhil Store')">Salin NMID</button>
+          </div>
+        </div>
+
+        <!-- QRIS 2 -->
+        <div class="qris-card">
+          <div class="qris-label">QRIS 2 - Warung Stok Mas Ses</div>
+          <div class="qris-img-container" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this)">
+            <img src="qris2.png" alt="QRIS Alternatif" onerror="showFallback(this, 'qris2.png')">
+            <div class="qris-overlay">🔍 Perbesar</div>
+          </div>
+          <div class="qris-actions">
+            <button class="btn btn-outline" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
+            <button class="btn btn-outline" onclick="copyText('ID1026494189180', 'NMID Alternatif')">Salin NMID</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      © By Fadhil | Last Update : 20:11 24 May 2026 | Contact : +62 852-5762-3929
+    </div>
+
   </div>
 
+  <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toast-text">Berhasil disalin</span>
   </div>
 
+  <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <div class="lightbox-content" onclick="event.stopPropagation()">
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
       <img id="lightbox-img" src="" alt="Full QRIS">
-      <div class="lightbox-info">
-        <h3 id="lightbox-title">Merchant Fadhil Store</h3>
-        <p id="lightbox-nmid">NMID: ID1025414765624</p>
+      <div class="lightbox-text">
+        <h3 id="lightbox-title">Merchant Title</h3>
+        <p id="lightbox-nmid">NMID: -</p>
       </div>
     </div>
   </div>
 
   <script>
-    // THEME LOGIC
+    /* =========================================
+       DYNAMIC BACKGROUND GENERATOR (THE MAGIC)
+       ========================================= */
+    function initBackgrounds() {
+      const cosmicBg = document.getElementById('cosmic-bg');
+      const skyBg = document.getElementById('sky-bg');
+      
+      // Generate Stars for Dark Mode
+      for(let i = 0; i < 150; i++) {
+        let star = document.createElement('div');
+        star.className = 'star';
+        let size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        star.style.animationDelay = (Math.random() * 2) + 's';
+        cosmicBg.appendChild(star);
+      }
+
+      // Generate Meteors for Dark Mode
+      setInterval(() => {
+        if(document.documentElement.getAttribute('data-theme') === 'light') return;
+        let meteor = document.createElement('div');
+        meteor.className = 'meteor';
+        meteor.style.setProperty('--start', Math.random());
+        meteor.style.setProperty('--end', Math.random() - 0.5);
+        meteor.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+        cosmicBg.appendChild(meteor);
+        setTimeout(() => meteor.remove(), 1500);
+      }, 2000);
+
+      // Generate Clouds for Light Mode
+      for(let i = 0; i < 8; i++) {
+        let cloud = document.createElement('div');
+        cloud.className = 'cloud';
+        let width = Math.random() * 150 + 100;
+        cloud.style.width = width + 'px';
+        cloud.style.height = (width / 3) + 'px';
+        cloud.style.top = Math.random() * 60 + 'vh'; // Clouds mostly upper half
+        cloud.style.animationDuration = (Math.random() * 60 + 40) + 's';
+        cloud.style.animationDelay = '-' + (Math.random() * 100) + 's'; // Start at different positions
+        cloud.style.opacity = Math.random() * 0.5 + 0.5;
+        cloud.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+        skyBg.appendChild(cloud);
+      }
+    }
+    initBackgrounds();
+
+    /* =========================================
+       THEME LOGIC
+       ========================================= */
     function toggleTheme() {
       const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-theme');
-      if (currentTheme === 'light') {
+      if (html.getAttribute('data-theme') === 'light') {
         html.removeAttribute('data-theme');
         localStorage.setItem('theme', 'dark');
       } else {
@@ -941,13 +691,13 @@
       }
     }
 
-    // LOAD SAVED THEME
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
+    if (localStorage.getItem('theme') === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
     }
 
-    // ORIGINAL LOGIC (Text typing, quotes, date, etc)
+    /* =========================================
+       TEXT TYPING LOGIC (NO TEXT CHANGED)
+       ========================================= */
     const quotes = [
       "Dunia sementara, epep selamanya",
       "TF-nya lebihin pls biar gw cepet kaya",
@@ -961,7 +711,6 @@
     let isDeleting = false;
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Setup greeting text
       const hours = new Date().getHours();
       let greeting = "Halo,";
       if (hours >= 4 && hours < 11) greeting = "Selamat pagi,";
@@ -970,10 +719,8 @@
       else greeting = "Selamat malam,";
 
       document.getElementById("greeting-time").innerHTML = `<strong>${greeting}</strong>`;
-
-      // Set the text manually exactly like original code to prevent breaking
       document.getElementById("date-display").textContent = "Minggu, 24 Mei 2026";
-
+      
       setTimeout(typeWriter, 500);
     });
 
@@ -1001,12 +748,16 @@
       }
     }
 
-    function showFallback(img, qrisName) {
-      img.outerHTML = `
+    /* =========================================
+       UTILITIES & INTERACTIONS
+       ========================================= */
+    function showFallback(img, filename) {
+      const container = img.parentElement;
+      container.innerHTML = `
         <div class="qris-fallback">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          <div style="font-weight:800; color:var(--text-primary); font-size:14px; margin-bottom:6px;">Gambar Belum Ada</div>
-          <div style="color:var(--text-secondary); font-size:12px;">Upload file <strong>${img.getAttribute('src')}</strong> ke folder GitHub Anda.</div>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:15px; color: var(--text-highlight);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <div style="font-weight:900; font-size:16px; margin-bottom:8px;">Gambar Belum Ada</div>
+          <div style="font-size:13px; opacity:0.8;">Upload file <strong>${filename}</strong> ke folder GitHub Anda.</div>
         </div>
       `;
     }
@@ -1041,9 +792,9 @@
       window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2500);
     }
 
-    function openLightbox(imgSrc, title, nmid) {
-      const isFallbackActive = event.currentTarget.querySelector('.qris-fallback');
-      if (isFallbackActive) return;
+    function openLightbox(imgSrc, title, nmid, triggerElement) {
+      // Cek apakah fallback sedang aktif, jika ya jangan buka lightbox
+      if (triggerElement && triggerElement.querySelector('.qris-fallback')) return;
 
       const lightbox = document.getElementById("lightbox");
       document.getElementById("lightbox-img").src = imgSrc;
@@ -1057,4 +808,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
