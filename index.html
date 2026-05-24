@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment Page</title>
+  <title>fadhil seturr payment</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -14,7 +14,6 @@
       --muted: #aab2d5;
       --line: rgba(255, 255, 255, 0.08);
       --accent: #7c5cff;
-      --accent-2: #31d0aa;
       --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
       --radius: 24px;
     }
@@ -248,12 +247,13 @@
       flex: 0 0 auto;
     }
 
-    button {
+    button, a {
       border: 0;
       outline: none;
       cursor: pointer;
       font: inherit;
       transition: 0.2s ease;
+      text-decoration: none;
     }
 
     .btn {
@@ -262,6 +262,9 @@
       background: rgba(255, 255, 255, 0.08);
       color: var(--text);
       border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.12); }
@@ -469,10 +472,10 @@
       <section class="hero">
         <div class="panel hero-main">
           <div class="badge">payment page • modern clean</div>
-          <h1 class="title">halaman pembayaran yang rapi, simpel, dan gak bikin mata minta cuti</h1>
+          <h1 class="title">fadhil seturr payment</h1>
           <p class="subtitle">
-            cocok buat jualan digital, jasa, top up, atau order custom. tinggal ganti data, pasang qris,
-            terus beres. manusia seneng banget bikin hal simpel jadi ribet, jadi ini gue rapihin sekalian.
+            halaman pembayaran yang clean, simpel, dan gampang dipake.
+            tinggal pilih metode, copy nomor, terus beres.
           </p>
         </div>
 
@@ -480,8 +483,8 @@
           <div class="panel profile">
             <img class="avatar" src="logo.png" alt="logo" onerror="this.style.display='none'">
             <div>
-              <h2>rian-sama payment</h2>
-              <p>fast response, pembayaran aman, dan copy button biar gak ngetik manual kayak zaman batu.</p>
+              <h2>fadhil seturr</h2>
+              <p>pembayaran cepat, rapi, dan enak diliat. gak perlu gaya berlebihan.</p>
             </div>
           </div>
 
@@ -506,8 +509,9 @@
         <div class="section-head">
           <div>
             <h3>metode pembayaran</h3>
-            <p>klik salin buat copy nomor. gampang, gak perlu drama.</p>
+            <p>klik salin buat copy nomor. notif langsung muncul.</p>
           </div>
+          <a class="btn btn-primary" href="https://wa.me/6285257623929" target="_blank" rel="noopener">whatsapp</a>
         </div>
 
         <div class="methods">
@@ -518,12 +522,12 @@
                 <span class="method-name">gopay transfer</span>
               </div>
               <div class="account">
-                <span class="number" id="gopayNumber">087840710102</span>
-                <span class="name">atas nama: r*** s*****</span>
+                <span class="number">085257623929</span>
+                <span class="name">atas nama: m******* f******</span>
               </div>
             </div>
             <div class="actions">
-              <button class="btn" onclick="copyText('087840710102', 'nomor gopay')">salin nomor</button>
+              <button class="btn" onclick="copyText('085257623929', 'nomor gopay')">salin nomor</button>
             </div>
           </div>
 
@@ -534,18 +538,18 @@
                 <span class="method-name">dana transfer</span>
               </div>
               <div class="account">
-                <span class="number" id="danaNumber">085397744363</span>
-                <span class="name">atas nama: m*** c***** s*****</span>
+                <span class="number">081383327506</span>
+                <span class="name">atas nama: n*** c******</span>
               </div>
             </div>
             <div class="actions">
-              <button class="btn" onclick="copyText('085397744363', 'nomor dana')">salin nomor</button>
+              <button class="btn" onclick="copyText('081383327506', 'nomor dana')">salin nomor</button>
             </div>
           </div>
         </div>
 
         <p class="hint">
-          wajib kirim bukti pembayaran. tanpa bukti, ya susah diproses. ajaib sekali, ternyata transaksi butuh bukti.
+          kirim bukti pembayaran biar prosesnya lancar.
         </p>
       </section>
 
@@ -553,7 +557,7 @@
         <div class="section-head">
           <div>
             <h3>pembayaran qris</h3>
-            <p>scan langsung atau buka preview qris penuh.</p>
+            <p>scan langsung atau buka preview full.</p>
           </div>
           <button class="btn btn-primary" onclick="openModal()">lihat qris</button>
         </div>
@@ -579,13 +583,13 @@
               1. buka halaman ini<br><br>
               2. pilih gopay, dana, atau qris<br><br>
               3. kirim bukti transfer<br><br>
-              4. selesai, gak usah bikin ribet
+              4. selesai
             </div>
           </div>
         </div>
       </section>
 
-      <div class="footer">© 2026 rian-sama payment</div>
+      <div class="footer">© 2026 fadhil seturr payment</div>
     </main>
   </div>
 
@@ -640,4 +644,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
