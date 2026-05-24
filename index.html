@@ -551,14 +551,14 @@
         <div class="badge-row">
           <div class="badge">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            fadhil store • secure gateway
+            secured gateway
           </div>
           <div class="badge-status">
             <span class="pulse-dot"></span>
-            Sistem Aktif (24 Jam)
+            Aktif (24 Jam)
           </div>
         </div>
-        <h1 class="title">Fadhil Store Payment</h1>
+        <h1 class="title">Fadhil Setur Payment</h1>
         
         <!-- Dashboard Greeting Dinamis -->
         <div class="dashboard-info">
@@ -641,7 +641,7 @@
       <section class="panel" style="animation-delay: 0.2s;">
         <div class="section-head">
           <div>
-            <h3 class="section-title">QRIS Gateway</h3>
+            <h3 class="section-title">QRIS</h3>
             <p class="section-subtitle">Scan via aplikasi pembayaran atau klik untuk memperbesar penuh.</p>
           </div>
         </div>
@@ -649,7 +649,7 @@
         <div class="qris-grid">
           <!-- QRIS 1 -->
           <div class="qris-box">
-            <div class="qris-label">QRIS Static - Fadhil Store</div>
+            <div class="qris-label">QRIS Utama - Fadhil Store</div>
             <div class="qris-preview" onclick="openLightbox('qris1.png', 'Fadhil Store', 'ID1025414765624')">
               <img src="qris1.png" alt="QRIS Fadhil Store" onerror="showFallback(this, 'QRIS 1 Utama')">
             </div>
@@ -666,7 +666,7 @@
           <!-- QRIS 2 -->
           <div class="qris-box">
             <div class="qris-label">QRIS Alternatif</div>
-            <div class="qris-preview" onclick="openLightbox('qris2.png', 'QRIS Alternatif', 'A01-ALT')">
+            <div class="qris-preview" onclick="openLightbox('qris2.png', 'QRIS Alternatif', 'ID1026494189180')">
               <img src="qris2.png" alt="QRIS Alternatif" onerror="showFallback(this, 'QRIS 2 Alternatif')">
             </div>
             <div style="display:flex; gap:6px; width:100%;">
@@ -683,7 +683,7 @@
 
       <!-- FOOTER -->
       <div class="footer">
-        © 2026 Fadhil Store Payment Gateway • Hak Cipta Dilindungi.
+        © 2026 Fadhil Setur • +62 852-5762-3929
       </div>
     </main>
   </div>
@@ -720,7 +720,7 @@
       else if (hours >= 15 && hours < 18) greeting = "Selamat sore 🌇";
       else greeting = "Selamat malam 🌌";
 
-      document.getElementById("greeting").innerHTML = `${greeting}, <strong>Fadhil</strong>. Siap melayani orderan Anda!`;
+      document.getElementById("greeting").innerHTML = `${greeting}, <strong>Admin</strong> online jam 11.00-02.00`;
 
       // Atur tanggal dinamis hari ini
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
