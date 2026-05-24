@@ -6,34 +6,42 @@
   <title>Fadhil Store - Payment Gateway</title>
   <style>
     :root {
-      --bg-color: #05050a;
-      --glass-bg: rgba(18, 18, 28, 0.85);
-      --glass-border: rgba(255, 255, 255, 0.1);
+      /* Dark Mode Variables */
+      --glass-bg: rgba(18, 18, 28, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+      
       --text-main: #ffffff;
       --text-muted: #94a3b8;
       --text-highlight: #38bdf8;
+      
       --accent-color: #38bdf8;
       --accent-btn: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      
       --card-inner: rgba(255, 255, 255, 0.05);
       --method-hover: rgba(56, 189, 248, 0.1);
+      
       --qris-overlay: rgba(0, 0, 0, 0.85);
       --success-bg: rgba(16, 185, 129, 0.15);
       --success-text: #34d399;
     }
 
     [data-theme="light"] {
-      --bg-color: #60a5fa;
-      --glass-bg: rgba(255, 255, 255, 0.95);
-      --glass-border: rgba(255, 255, 255, 0.8);
-      --glass-shadow: 0 12px 40px 0 rgba(37, 99, 235, 0.15);
+      /* White/Light Mode Variables - Fixed Glass Effect */
+      --glass-bg: rgba(255, 255, 255, 0.35); /* Transparan biar blur-nya kelihatan */
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-highlight: #2563eb;
+      
       --accent-color: #2563eb;
       --accent-btn: linear-gradient(135deg, #3b82f6, #2563eb);
-      --card-inner: rgba(255, 255, 255, 0.6);
-      --method-hover: rgba(255, 255, 255, 0.9);
+      
+      --card-inner: rgba(255, 255, 255, 0.5);
+      --method-hover: rgba(255, 255, 255, 0.85);
+      
       --qris-overlay: rgba(255, 255, 255, 0.9);
       --success-bg: #d1fae5;
       --success-text: #059669;
@@ -43,7 +51,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
     }
 
     body {
@@ -56,30 +64,44 @@
       flex-direction: column;
     }
 
+    /* Animated Background Layer */
     #bg-animate {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background-color: var(--bg-color);
+      /* Dark mode gradient */
+      background: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #05050a 100%);
+      transition: background 0.5s ease;
+    }
+
+    /* Moving pattern layer */
+    #bg-animate::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      /* Stars SVG */
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Ccircle cx='50' cy='50' r='1.5' fill='%23fff' opacity='0.6'/%3E%3Ccircle cx='250' cy='150' r='2' fill='%23fff' opacity='0.9'/%3E%3Ccircle cx='100' cy='300' r='1' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='350' cy='350' r='1.5' fill='%23fff' opacity='0.7'/%3E%3Ccircle cx='200' cy='50' r='1' fill='%23fff' opacity='0.5'/%3E%3C/svg%3E");
-      animation: moveStars 60s linear infinite;
+      animation: movePattern 60s linear infinite;
     }
 
+    /* Light Mode Background */
     [data-theme="light"] #bg-animate {
+      /* Sky gradient */
+      background: linear-gradient(180deg, #60a5fa 0%, #bae6fd 50%, #e0f2fe 100%);
+    }
+
+    [data-theme="light"] #bg-animate::after {
+      /* Clouds SVG */
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Cpath d='M100 150a30 30 0 0 1 60 0 20 20 0 0 1-60 0z' fill='%23fff' opacity='0.5'/%3E%3Ccircle cx='130' cy='140' r='30' fill='%23fff' opacity='0.5'/%3E%3Ccircle cx='160' cy='150' r='25' fill='%23fff' opacity='0.5'/%3E%3Cpath d='M400 250a40 40 0 0 1 80 0 30 30 0 0 1-80 0z' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='440' cy='235' r='40' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='480' cy='250' r='35' fill='%23fff' opacity='0.4'/%3E%3C/svg%3E");
-      animation: moveClouds 80s linear infinite;
+      animation: movePattern 80s linear infinite;
     }
 
-    @keyframes moveStars {
+    @keyframes movePattern {
       from { background-position: 0 0; }
-      to { background-position: -400px 400px; }
+      to { background-position: -600px 600px; }
     }
 
-    @keyframes moveClouds {
-      from { background-position: 0 0; }
-      to { background-position: 600px 0; }
-    }
-
+    /* Layout */
     .container {
       max-width: 720px;
       margin: 0 auto;
@@ -88,8 +110,11 @@
       z-index: 1;
     }
 
+    /* Ultra Glassmorphism Panel */
     .glass-panel {
       background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
       border-radius: 24px;
@@ -110,13 +135,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Typography & Headers */
     .hero-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
     }
 
     .badge-secure, .badge-active {
@@ -141,9 +163,8 @@
     }
 
     @keyframes pulseGreen {
-      0% { opacity: 1; transform: scale(1); }
+      0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(1.5); }
-      100% { opacity: 1; transform: scale(1); }
     }
 
     .main-title {
@@ -189,6 +210,7 @@
     .section-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
     .section-desc { font-size: 14px; color: var(--text-muted); }
 
+    /* Buttons */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px;
@@ -208,6 +230,7 @@
       transform: translateY(-2px);
     }
 
+    /* Method Cards */
     .method-list { display: flex; flex-direction: column; gap: 16px; }
 
     .method-card {
@@ -242,6 +265,7 @@
     .method-number { font-family: monospace; font-size: 20px; font-weight: bold; color: var(--text-highlight); }
     .method-user { font-size: 14px; color: var(--text-muted); }
 
+    /* Guide Box */
     .guide-box {
       margin-top: 30px; padding: 25px; border-radius: 16px;
       background: var(--card-inner); border: 1px dashed var(--glass-border);
@@ -257,6 +281,7 @@
       display: flex; gap: 10px; align-items: flex-start;
     }
 
+    /* QRIS Box */
     .qris-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;
     }
@@ -296,9 +321,14 @@
       background: var(--card-inner); padding: 20px; color: var(--text-main);
     }
 
+    /* Float Elements */
     .theme-toggle {
       position: fixed; top: 25px; right: 25px; z-index: 100;
-      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
       color: var(--text-main); padding: 10px 20px; border-radius: 50px;
       display: flex; align-items: center; gap: 10px; font-weight: 700;
       cursor: pointer; transition: transform 0.2s, border-color 0.2s;
