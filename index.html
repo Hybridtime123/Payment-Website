@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fadhil Store - Payment Gateway</title>
   <style>
-    /* Premium Monochrome Design Tokens */
     :root {
       --bg: #09090b;
       --bg-gradient: linear-gradient(180deg, #09090b 0%, #121214 100%);
@@ -42,7 +41,6 @@
       line-height: 1.5;
     }
 
-    /* Efek cahaya redup di latar belakang */
     body::before {
       content: "";
       position: absolute;
@@ -65,6 +63,10 @@
     @keyframes pulse-glow {
       0%, 100% { opacity: 0.5; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
     }
 
     .animate-fade-in {
@@ -179,10 +181,19 @@
     .greeting-text {
       font-size: 14px;
       color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      min-height: 24px;
     }
 
-    .greeting-text strong {
-      color: var(--text-primary);
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 15px;
+      background-color: var(--text-primary);
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
     }
 
     .session-date {
@@ -345,7 +356,6 @@
       color: var(--text-secondary);
     }
 
-    /* FIX: object-fit contain dengan bg putih kontras tinggi agar QRIS utuh & scan lancar */
     .qris-preview {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -426,7 +436,6 @@
       gap: 6px;
     }
 
-    /* Lightbox Modal */
     .lightbox {
       position: fixed;
       inset: 0;
@@ -487,7 +496,6 @@
     .lightbox-info h3 { margin: 0; font-size: 18px; font-weight: 800; }
     .lightbox-info p { margin: 4px 0 0 0; font-size: 12px; color: #71717a; }
 
-    /* Toast Notification */
     .toast {
       position: fixed;
       left: 50%;
@@ -546,7 +554,6 @@
   <div class="wrap">
     <main class="page">
       
-      <!-- HERO PANEL -->
       <section class="panel hero-main">
         <div class="badge-row">
           <div class="badge">
@@ -560,10 +567,9 @@
         </div>
         <h1 class="title">Fadhil Setur Payment</h1>
         
-        <!-- Dashboard Greeting Dinamis -->
         <div class="dashboard-info">
-          <div class="greeting-text" id="greeting">
-            Memuat dashboard...
+          <div class="greeting-text">
+            <span id="greeting-time"></span>&nbsp;<span id="typing-text"></span><span class="typing-cursor"></span>
           </div>
           <div class="session-date" id="date-display">
             Minggu, 24 Mei 2026
@@ -571,7 +577,6 @@
         </div>
       </section>
 
-      <!-- METODE PEMBAYARAN PANEL -->
       <section class="panel" style="animation-delay: 0.15s;">
         <div class="section-head">
           <div>
@@ -585,7 +590,6 @@
         </div>
 
         <div class="methods">
-          <!-- GOPAY -->
           <div class="method">
             <div class="method-left">
               <div class="method-top">
@@ -603,7 +607,6 @@
             </button>
           </div>
 
-          <!-- DANA -->
           <div class="method">
             <div class="method-left">
               <div class="method-top">
@@ -622,7 +625,6 @@
           </div>
         </div>
 
-        <!-- Cara Pakai -->
         <div class="guide-box">
           <h4>Cara Pembayaran:</h4>
           <ol class="guide-list">
@@ -637,7 +639,6 @@
         </div>
       </section>
 
-      <!-- QRIS PANEL -->
       <section class="panel" style="animation-delay: 0.2s;">
         <div class="section-head">
           <div>
@@ -647,7 +648,6 @@
         </div>
 
         <div class="qris-grid">
-          <!-- QRIS 1 -->
           <div class="qris-box">
             <div class="qris-label">QRIS Utama - Fadhil Store</div>
             <div class="qris-preview" onclick="openLightbox('qris1.png', 'Fadhil Store', 'ID1025414765624')">
@@ -663,7 +663,6 @@
             </div>
           </div>
 
-          <!-- QRIS 2 -->
           <div class="qris-box">
             <div class="qris-label">QRIS Alternatif</div>
             <div class="qris-preview" onclick="openLightbox('qris2.png', 'QRIS Alternatif', 'ID1026494189180')">
@@ -681,20 +680,17 @@
         </div>
       </section>
 
-      <!-- FOOTER -->
       <div class="footer">
         © By Fadhil | Last Update : 20:11 24 May 2026 | Contact : +62 852-5762-3929
       </div>
     </main>
   </div>
 
-  <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toast-text">Berhasil disalin</span>
   </div>
 
-  <!-- LIGHTBOX MODAL -->
   <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <div class="lightbox-content" onclick="event.stopPropagation()">
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
@@ -707,28 +703,61 @@
   </div>
 
   <script>
+    const quotes = [
+      "Dunia sementara, epep selamanya",
+      "TF-nya lebihin pls biar gw cepet kaya",
+      "Lagi error? ganti payment saja",
+      "Makasih udh buy di gw",
+      "Ada masalah? wa +62-852-5762-3929"
+    ];
+
+    let quoteIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
     document.addEventListener("DOMContentLoaded", () => {
-      // Terapkan animasi masuk panel
       const panels = document.querySelectorAll('.panel');
       panels.forEach((panel) => panel.classList.add('animate-fade-in'));
 
-      // Atur greeting waktu otomatis
       const hours = new Date().getHours();
-      let greeting = "Halo";
-      if (hours >= 4 && hours < 11) greeting = "Selamat pagi 🌅";
-      else if (hours >= 11 && hours < 15) greeting = "Selamat siang ☀️";
-      else if (hours >= 15 && hours < 18) greeting = "Selamat sore 🌇";
-      else greeting = "Selamat malam 🌌";
+      let greeting = "Halo,";
+      if (hours >= 4 && hours < 11) greeting = "Selamat pagi,";
+      else if (hours >= 11 && hours < 15) greeting = "Selamat siang,";
+      else if (hours >= 15 && hours < 18) greeting = "Selamat sore,";
+      else greeting = "Selamat malam,";
 
-      // BUG FIX: Set teks greeting dinamis ke elemen HTML
-      document.getElementById("greeting").innerHTML = `${greeting}, <strong>Fadhil</strong>. Siap melayani orderan Anda!`;
+      document.getElementById("greeting-time").innerHTML = `<strong>${greeting}</strong>`;
 
-      // Atur tanggal dinamis hari ini
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       document.getElementById("date-display").textContent = new Date().toLocaleDateString('id-ID', options);
+
+      setTimeout(typeWriter, 500);
     });
 
-    // Menangani error jika file QRIS belum diupload
+    function typeWriter() {
+      const currentQuote = quotes[quoteIndex];
+      const typingElement = document.getElementById("typing-text");
+
+      if (isDeleting) {
+        typingElement.textContent = currentQuote.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        typingElement.textContent = currentQuote.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      if (!isDeleting && charIndex === currentQuote.length) {
+        isDeleting = true;
+        setTimeout(typeWriter, 2000);
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        quoteIndex = (quoteIndex + 1) % quotes.length;
+        setTimeout(typeWriter, 500);
+      } else {
+        setTimeout(typeWriter, isDeleting ? 30 : 60);
+      }
+    }
+
     function showFallback(img, qrisName) {
       img.outerHTML = `
         <div class="qris-fallback">
@@ -739,7 +768,6 @@
       `;
     }
 
-    // Fungsi salin handal untuk Mobile WebView / IFrame
     function copyText(text, label = "Teks") {
       const textArea = document.createElement("textarea");
       textArea.value = text;
@@ -762,7 +790,6 @@
       document.body.removeChild(textArea);
     }
 
-    // Notifikasi Toast
     function showToast(message) {
       const toast = document.getElementById("toast");
       document.getElementById("toast-text").textContent = message;
@@ -771,7 +798,6 @@
       window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
     }
 
-    // Modal Lightbox Controller
     function openLightbox(imgSrc, title, nmid) {
       const isFallbackActive = event.currentTarget.querySelector('.qris-fallback');
       if (isFallbackActive) return;
@@ -788,4 +814,4 @@
     }
   </script>
 </body>
-</html>
+            </html>
