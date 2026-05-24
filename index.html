@@ -5,65 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fadhil Store - Payment Gateway</title>
   <style>
-    /* =========================================
-       THEME VARIABLES
-       ========================================= */
     :root {
-      /* Dark Theme (Cosmic Universe) */
       --bg-color: #05050a;
       --glass-bg: rgba(15, 15, 25, 0.4);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-hover: rgba(255, 255, 255, 0.15);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-      
       --text-main: #ffffff;
       --text-muted: #94a3b8;
       --text-highlight: #38bdf8;
-      
       --accent-color: #38bdf8;
       --accent-glow: 0 0 20px rgba(56, 189, 248, 0.5);
       --accent-btn: linear-gradient(135deg, #0ea5e9, #3b82f6);
-      
       --card-inner: rgba(255, 255, 255, 0.03);
       --method-hover: rgba(56, 189, 248, 0.1);
-      
       --qris-overlay: rgba(0, 0, 0, 0.85);
       --success-bg: rgba(16, 185, 129, 0.15);
       --success-text: #34d399;
     }
 
     [data-theme="light"] {
-      /* Light Theme (Moving Clouds & Sky) */
-      --bg-color: #60a5fa; /* Sky blue fallback */
+      --bg-color: #60a5fa;
       --glass-bg: rgba(255, 255, 255, 0.6);
       --glass-border: rgba(255, 255, 255, 0.8);
       --glass-hover: rgba(255, 255, 255, 1);
       --glass-shadow: 0 12px 40px 0 rgba(37, 99, 235, 0.15);
-      
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-highlight: #2563eb;
-      
       --accent-color: #2563eb;
       --accent-glow: 0 5px 15px rgba(37, 99, 235, 0.3);
       --accent-btn: linear-gradient(135deg, #3b82f6, #2563eb);
-      
       --card-inner: rgba(255, 255, 255, 0.5);
       --method-hover: rgba(255, 255, 255, 0.9);
-      
       --qris-overlay: rgba(255, 255, 255, 0.9);
       --success-bg: #d1fae5;
       --success-text: #059669;
     }
 
-    /* =========================================
-       GLOBAL & RESET
-       ========================================= */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
+      transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
     }
 
     body {
@@ -77,9 +61,6 @@
       flex-direction: column;
     }
 
-    /* =========================================
-       ANIMATED BACKGROUNDS
-       ========================================= */
     #background-container {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -88,7 +69,6 @@
       pointer-events: none;
     }
 
-    /* Cosmic (Dark Mode) Elements */
     .cosmic-layer {
       position: absolute; width: 100%; height: 100%;
       background: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #05050a 100%);
@@ -98,27 +78,26 @@
       position: absolute;
       background: white;
       border-radius: 50%;
-      box-shadow: 0 0 5px white;
       animation: twinkle linear infinite;
+      will-change: opacity, transform;
     }
     @keyframes twinkle {
       0%, 100% { opacity: 0.2; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff, 0 0 20px var(--accent-color); }
+      50% { opacity: 1; transform: scale(1.1); }
     }
     .meteor {
       position: absolute;
-      width: 2px; height: 50px;
+      width: 2px; height: 60px;
       background: linear-gradient(to bottom, transparent, white);
-      transform: rotate(45deg);
       animation: meteorFall linear infinite;
       opacity: 0;
+      will-change: transform, opacity;
     }
     @keyframes meteorFall {
-      0% { top: -50px; left: calc(100% * var(--start)); opacity: 1; }
-      100% { top: 100vh; left: calc(100% * var(--end)); opacity: 0; }
+      0% { transform: translate(0, -100px) rotate(45deg); opacity: 1; }
+      100% { transform: translate(-60vw, 100vh) rotate(45deg); opacity: 0; }
     }
 
-    /* Sky (Light Mode) Elements */
     .sky-layer {
       position: absolute; width: 100%; height: 100%;
       background: linear-gradient(180deg, #3b82f6 0%, #93c5fd 50%, #e0f2fe 100%);
@@ -128,8 +107,8 @@
       position: absolute;
       background: rgba(255, 255, 255, 0.8);
       border-radius: 100px;
-      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.05));
       animation: floatCloud linear infinite;
+      will-change: transform;
     }
     .cloud::before, .cloud::after {
       content: ''; position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50%;
@@ -142,13 +121,9 @@
       100% { transform: translateX(100vw); }
     }
 
-    /* Theme Switching Logic for Background */
     [data-theme="light"] .cosmic-layer { opacity: 0; }
     [data-theme="light"] .sky-layer { opacity: 1; }
 
-    /* =========================================
-       LAYOUT & GLASSMORPHISM
-       ========================================= */
     .container {
       max-width: 720px;
       margin: 0 auto;
@@ -159,42 +134,38 @@
 
     .glass-panel {
       background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
       border-radius: 24px;
       padding: 35px;
       margin-bottom: 25px;
       opacity: 0;
-      transform: translateY(40px);
-      animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      transform: translateY(30px);
+      animation: slideUpFade 0.6s ease-out forwards;
       overflow: hidden;
       position: relative;
     }
 
-    /* Shine effect on panel */
     .glass-panel::before {
       content: '';
       position: absolute; top: 0; left: -100%;
       width: 50%; height: 100%;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
       transform: skewX(-20deg);
-      transition: 0.5s;
+      transition: left 0.5s;
     }
-    .glass-panel:hover::before { left: 200%; transition: 1s ease-in-out; }
+    .glass-panel:hover::before { left: 200%; transition: left 1s ease-in-out; }
 
     .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.3s; }
-    .delay-3 { animation-delay: 0.5s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
 
     @keyframes slideUpFade {
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* =========================================
-       HEADER & HERO
-       ========================================= */
     .hero-header {
       display: flex;
       justify-content: space-between;
@@ -216,17 +187,16 @@
       background: var(--success-bg); color: var(--success-text);
       border: 1px solid var(--success-text);
       font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
-      box-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
     }
     .dot-pulse {
-      width: 10px; height: 10px; background-color: var(--success-text);
+      width: 8px; height: 8px; background-color: var(--success-text);
       border-radius: 50%; display: block;
       animation: pulseGreen 2s infinite;
     }
     @keyframes pulseGreen {
-      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     .main-title {
@@ -237,7 +207,6 @@
       background: linear-gradient(135deg, var(--text-main), var(--text-highlight));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
 
     .hero-footer {
@@ -263,9 +232,6 @@
       background: var(--card-inner); border: 1px solid var(--glass-border);
     }
 
-    /* =========================================
-       SECTION ELEMENTS
-       ========================================= */
     .section-header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 30px; flex-wrap: wrap; gap: 15px;
@@ -273,20 +239,18 @@
     .section-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
     .section-desc { font-size: 14px; color: var(--text-muted); }
 
-    /* BUTTONS */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px;
       cursor: pointer; text-decoration: none; border: none;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
     }
     .btn-wa {
       background: var(--accent-btn); color: #fff;
-      box-shadow: var(--accent-glow);
     }
     .btn-wa:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
     }
     .btn-outline {
       background: var(--card-inner); color: var(--text-main);
@@ -294,24 +258,24 @@
     }
     .btn-outline:hover {
       background: var(--text-main); color: var(--bg-color);
-      transform: translateY(-3px);
+      transform: translateY(-2px);
     }
 
-    /* PAYMENT METHODS LIST */
     .method-list { display: flex; flex-direction: column; gap: 16px; }
     .method-card {
       display: flex; justify-content: space-between; align-items: center;
       padding: 20px; border-radius: 16px;
       background: var(--card-inner); border: 1px solid var(--glass-border);
       position: relative; z-index: 1; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s, background-color 0.3s;
     }
     .method-card::after {
       content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
-      background: var(--accent-color); transform: scaleY(0); transition: transform 0.3s;
+      background: var(--accent-color); transform: scaleY(0); transition: transform 0.2s;
     }
     .method-card:hover {
       background: var(--method-hover); border-color: var(--text-highlight);
-      transform: translateX(8px);
+      transform: translateX(5px);
     }
     .method-card:hover::after { transform: scaleY(1); }
 
@@ -325,7 +289,6 @@
     .method-number { font-family: monospace; font-size: 20px; font-weight: bold; color: var(--text-highlight); }
     .method-user { font-size: 14px; color: var(--text-muted); }
 
-    /* GUIDE BOX */
     .guide-box {
       margin-top: 30px; padding: 25px; border-radius: 16px;
       background: linear-gradient(135deg, var(--card-inner), transparent);
@@ -340,7 +303,6 @@
       display: flex; gap: 10px; align-items: flex-start;
     }
 
-    /* QRIS GRID */
     .qris-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;
     }
@@ -348,12 +310,11 @@
       background: var(--card-inner); border: 1px solid var(--glass-border);
       border-radius: 20px; padding: 25px;
       display: flex; flex-direction: column; align-items: center; gap: 18px;
-      transition: all 0.4s;
+      transition: transform 0.3s, border-color 0.3s;
     }
     .qris-card:hover {
-      transform: translateY(-10px);
+      transform: translateY(-5px);
       border-color: var(--text-highlight);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
     }
     .qris-label { font-weight: 800; font-size: 16px; text-align: center; }
     
@@ -361,17 +322,15 @@
       width: 100%; aspect-ratio: 1; border-radius: 16px;
       background: #fff; padding: 10px;
       position: relative; overflow: hidden; cursor: zoom-in;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     .qris-img-container img {
-      width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s;
+      width: 100%; height: 100%; object-fit: contain; transition: transform 0.4s;
     }
-    .qris-img-container:hover img { transform: scale(1.1); }
+    .qris-img-container:hover img { transform: scale(1.05); }
     .qris-overlay {
       position: absolute; inset: 0; background: var(--qris-overlay);
       color: var(--text-main); display: flex; align-items: center; justify-content: center;
-      font-weight: bold; opacity: 0; transition: opacity 0.3s;
-      backdrop-filter: blur(5px);
+      font-weight: bold; opacity: 0; transition: opacity 0.2s;
     }
     .qris-img-container:hover .qris-overlay { opacity: 1; }
 
@@ -384,20 +343,16 @@
       background: var(--card-inner); padding: 20px; color: var(--text-main);
     }
 
-    /* =========================================
-       FLOATING ELEMENTS (THEME TOGGLE & TOAST)
-       ========================================= */
     .theme-toggle {
       position: fixed; top: 25px; right: 25px; z-index: 100;
       background: var(--glass-bg); border: 1px solid var(--glass-border);
-      backdrop-filter: blur(15px); color: var(--text-main);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--text-main);
       padding: 10px 20px; border-radius: 50px;
       display: flex; align-items: center; gap: 10px; font-weight: 700;
-      cursor: pointer; box-shadow: var(--glass-shadow);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer; transition: transform 0.2s, border-color 0.3s;
     }
     .theme-toggle:hover {
-      transform: scale(1.1) rotate(5deg); border-color: var(--text-highlight);
+      transform: scale(1.05); border-color: var(--text-highlight);
     }
     .theme-toggle .icon-moon { display: block; }
     .theme-toggle .icon-sun { display: none; }
@@ -408,23 +363,22 @@
       position: fixed; bottom: 40px; left: 50%; transform: translate(-50%, 50px);
       background: var(--accent-btn); color: #fff; padding: 15px 30px;
       border-radius: 50px; font-weight: bold; font-size: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; pointer-events: none;
-      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 999;
-      display: flex; align-items: center; gap: 10px;
+      opacity: 0; pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s;
+      z-index: 999; display: flex; align-items: center; gap: 10px;
     }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    /* LIGHTBOX */
     .lightbox {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(10px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
     .lightbox.show { opacity: 1; pointer-events: auto; }
     .lightbox-content {
       background: #fff; padding: 20px; border-radius: 24px; max-width: 90vw; max-height: 80vh;
-      transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transform: scale(0.9); transition: transform 0.3s;
+      position: relative;
     }
     .lightbox.show .lightbox-content { transform: scale(1); }
     .lightbox img { max-width: 100%; max-height: 60vh; border-radius: 12px; }
@@ -432,9 +386,9 @@
       position: absolute; top: -50px; right: 0; background: rgba(255,255,255,0.2);
       border: 1px solid rgba(255,255,255,0.4); color: white; width: 45px; height: 45px;
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 24px; cursor: pointer; transition: all 0.3s;
+      font-size: 24px; cursor: pointer; transition: background-color 0.2s, color 0.2s;
     }
-    .lightbox-close:hover { background: white; color: black; transform: rotate(90deg); }
+    .lightbox-close:hover { background: white; color: black; }
     .lightbox-text { text-align: center; margin-top: 20px; color: var(--bg-color); }
     .lightbox-text h3 { font-size: 22px; font-weight: 900; }
     .lightbox-text p { font-family: monospace; font-size: 16px; font-weight: bold; margin-top: 5px;}
@@ -453,13 +407,11 @@
 </head>
 <body>
 
-  <!-- Animated Background -->
   <div id="background-container">
     <div class="cosmic-layer" id="cosmic-bg"></div>
     <div class="sky-layer" id="sky-bg"></div>
   </div>
 
-  <!-- Theme Switcher -->
   <button class="theme-toggle" onclick="toggleTheme()">
     <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -468,7 +420,6 @@
 
   <div class="container">
     
-    <!-- HERO SECTION -->
     <section class="glass-panel delay-1">
       <div class="hero-header">
         <div class="badge-secure">
@@ -493,7 +444,6 @@
       </div>
     </section>
 
-    <!-- METHODS SECTION -->
     <section class="glass-panel delay-2">
       <div class="section-header">
         <div>
@@ -507,7 +457,6 @@
       </div>
 
       <div class="method-list">
-        <!-- Dana 1 -->
         <div class="method-card">
           <div class="method-info">
             <span class="method-tag">DANA</span>
@@ -521,7 +470,6 @@
           </button>
         </div>
 
-        <!-- Dana 2 -->
         <div class="method-card">
           <div class="method-info">
             <span class="method-tag">DANA</span>
@@ -535,7 +483,6 @@
           </button>
         </div>
 
-        <!-- Gopay -->
         <div class="method-card">
           <div class="method-info">
             <span class="method-tag">GOPAY</span>
@@ -564,7 +511,6 @@
       </div>
     </section>
 
-    <!-- QRIS SECTION -->
     <section class="glass-panel delay-3">
       <div class="section-header">
         <div>
@@ -574,7 +520,6 @@
       </div>
 
       <div class="qris-grid">
-        <!-- QRIS 1 -->
         <div class="qris-card">
           <div class="qris-label">QRIS Utama - Fadhil Store</div>
           <div class="qris-img-container" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this)">
@@ -587,7 +532,6 @@
           </div>
         </div>
 
-        <!-- QRIS 2 -->
         <div class="qris-card">
           <div class="qris-label">QRIS 2 - Warung Stok Mas Ses</div>
           <div class="qris-img-container" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this)">
@@ -608,13 +552,11 @@
 
   </div>
 
-  <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toast-text">Berhasil disalin</span>
   </div>
 
-  <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <div class="lightbox-content" onclick="event.stopPropagation()">
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
@@ -627,18 +569,14 @@
   </div>
 
   <script>
-    /* =========================================
-       DYNAMIC BACKGROUND GENERATOR (THE MAGIC)
-       ========================================= */
     function initBackgrounds() {
       const cosmicBg = document.getElementById('cosmic-bg');
       const skyBg = document.getElementById('sky-bg');
       
-      // Generate Stars for Dark Mode
-      for(let i = 0; i < 150; i++) {
+      for(let i = 0; i < 40; i++) {
         let star = document.createElement('div');
         star.className = 'star';
-        let size = Math.random() * 3 + 1;
+        let size = Math.random() * 2 + 1;
         star.style.width = size + 'px';
         star.style.height = size + 'px';
         star.style.left = Math.random() * 100 + 'vw';
@@ -648,38 +586,31 @@
         cosmicBg.appendChild(star);
       }
 
-      // Generate Meteors for Dark Mode
-      setInterval(() => {
-        if(document.documentElement.getAttribute('data-theme') === 'light') return;
+      for(let i = 0; i < 4; i++) {
         let meteor = document.createElement('div');
         meteor.className = 'meteor';
-        meteor.style.setProperty('--start', Math.random());
-        meteor.style.setProperty('--end', Math.random() - 0.5);
-        meteor.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+        meteor.style.left = (Math.random() * 100) + 'vw';
+        meteor.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+        meteor.style.animationDelay = (Math.random() * 5) + 's';
         cosmicBg.appendChild(meteor);
-        setTimeout(() => meteor.remove(), 1500);
-      }, 2000);
+      }
 
-      // Generate Clouds for Light Mode
-      for(let i = 0; i < 8; i++) {
+      for(let i = 0; i < 5; i++) {
         let cloud = document.createElement('div');
         cloud.className = 'cloud';
-        let width = Math.random() * 150 + 100;
+        let width = Math.random() * 100 + 80;
         cloud.style.width = width + 'px';
         cloud.style.height = (width / 3) + 'px';
-        cloud.style.top = Math.random() * 60 + 'vh'; // Clouds mostly upper half
-        cloud.style.animationDuration = (Math.random() * 60 + 40) + 's';
-        cloud.style.animationDelay = '-' + (Math.random() * 100) + 's'; // Start at different positions
-        cloud.style.opacity = Math.random() * 0.5 + 0.5;
+        cloud.style.top = Math.random() * 50 + 'vh';
+        cloud.style.animationDuration = (Math.random() * 40 + 30) + 's';
+        cloud.style.animationDelay = '-' + (Math.random() * 50) + 's';
+        cloud.style.opacity = Math.random() * 0.4 + 0.4;
         cloud.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
         skyBg.appendChild(cloud);
       }
     }
     initBackgrounds();
 
-    /* =========================================
-       THEME LOGIC
-       ========================================= */
     function toggleTheme() {
       const html = document.documentElement;
       if (html.getAttribute('data-theme') === 'light') {
@@ -695,9 +626,6 @@
       document.documentElement.setAttribute('data-theme', 'light');
     }
 
-    /* =========================================
-       TEXT TYPING LOGIC (NO TEXT CHANGED)
-       ========================================= */
     const quotes = [
       "Dunia sementara, epep selamanya",
       "TF-nya lebihin pls biar gw cepet kaya",
@@ -748,9 +676,6 @@
       }
     }
 
-    /* =========================================
-       UTILITIES & INTERACTIONS
-       ========================================= */
     function showFallback(img, filename) {
       const container = img.parentElement;
       container.innerHTML = `
@@ -793,7 +718,6 @@
     }
 
     function openLightbox(imgSrc, title, nmid, triggerElement) {
-      // Cek apakah fallback sedang aktif, jika ya jangan buka lightbox
       if (triggerElement && triggerElement.querySelector('.qris-fallback')) return;
 
       const lightbox = document.getElementById("lightbox");
@@ -808,4 +732,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
