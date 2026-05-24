@@ -8,7 +8,7 @@
     :root {
       --glass-bg: rgba(18, 18, 28, 0.45);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+      --glass-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
       --text-main: #ffffff;
       --text-muted: #94a3b8;
       --text-highlight: #38bdf8;
@@ -24,8 +24,8 @@
 
     [data-theme="light"] {
       --glass-bg: rgba(255, 255, 255, 0.35);
-      --glass-border: rgba(255, 255, 255, 0.6);
-      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.55);
+      --glass-shadow: 0 6px 18px rgba(31, 38, 135, 0.12);
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-highlight: #2563eb;
@@ -43,6 +43,10 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -63,32 +67,11 @@
       inset: 0;
       z-index: -1;
       background: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #05050a 100%);
-      transition: background 0.5s ease;
-      contain: strict;
-    }
-
-    #bg-animate::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Ccircle cx='50' cy='50' r='1.5' fill='%23fff' opacity='0.6'/%3E%3Ccircle cx='250' cy='150' r='2' fill='%23fff' opacity='0.9'/%3E%3Ccircle cx='100' cy='300' r='1' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='350' cy='350' r='1.5' fill='%23fff' opacity='0.7'/%3E%3Ccircle cx='200' cy='50' r='1' fill='%23fff' opacity='0.5'/%3E%3C/svg%3E");
-      animation: movePattern 60s linear infinite;
-      will-change: background-position;
-      opacity: 0.7;
+      will-change: auto;
     }
 
     [data-theme="light"] #bg-animate {
       background: linear-gradient(180deg, #60a5fa 0%, #bae6fd 50%, #e0f2fe 100%);
-    }
-
-    [data-theme="light"] #bg-animate::after {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Cpath d='M100 150a30 30 0 0 1 60 0 20 20 0 0 1-60 0z' fill='%23fff' opacity='0.5'/%3E%3Ccircle cx='130' cy='140' r='30' fill='%23fff' opacity='0.5'/%3E%3Ccircle cx='160' cy='150' r='25' fill='%23fff' opacity='0.5'/%3E%3Cpath d='M400 250a40 40 0 0 1 80 0 30 30 0 0 1-80 0z' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='440' cy='235' r='40' fill='%23fff' opacity='0.4'/%3E%3Ccircle cx='480' cy='250' r='35' fill='%23fff' opacity='0.4'/%3E%3C/svg%3E");
-      animation: movePattern 80s linear infinite;
-    }
-
-    @keyframes movePattern {
-      from { background-position: 0 0; }
-      to { background-position: -600px 600px; }
     }
 
     .container {
@@ -103,25 +86,25 @@
 
     .glass-panel {
       background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
       border-radius: 24px;
       padding: 35px;
       margin-bottom: 25px;
       opacity: 0;
-      transform: translateY(20px);
-      animation: slideUpFade 0.5s ease-out forwards;
+      transform: translateY(10px);
+      animation: slideUpFade 0.35s ease-out forwards;
       overflow: hidden;
       position: relative;
       content-visibility: auto;
       contain-intrinsic-size: 420px;
     }
 
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.12s; }
+    .delay-3 { animation-delay: 0.18s; }
 
     @keyframes slideUpFade {
       to { opacity: 1; transform: translateY(0); }
@@ -169,7 +152,7 @@
 
     @keyframes pulseGreen {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.5); }
+      50% { opacity: 0.5; transform: scale(1.4); }
     }
 
     .main-title {
@@ -248,11 +231,11 @@
       cursor: pointer;
       text-decoration: none;
       border: none;
-      transition: transform 0.2s, background-color 0.2s, border-color 0.2s, opacity 0.2s, color 0.2s, box-shadow 0.2s;
+      transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease, color 0.18s ease;
     }
 
     .btn-wa { background: var(--accent-btn); color: #fff; }
-    .btn-wa:hover { transform: translateY(-3px); }
+    .btn-wa:hover { transform: translateY(-2px); }
 
     .btn-outline {
       background: var(--card-inner);
@@ -263,7 +246,7 @@
     .btn-outline:hover {
       background: var(--text-main);
       color: var(--bg-color);
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
     .method-list {
@@ -282,7 +265,7 @@
       border: 1px solid var(--glass-border);
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+      transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
       content-visibility: auto;
       contain-intrinsic-size: 140px;
     }
@@ -296,13 +279,13 @@
       width: 4px;
       background: var(--accent-color);
       transform: scaleY(0);
-      transition: transform 0.2s;
+      transition: transform 0.18s ease;
     }
 
     .method-card:hover {
       background: var(--method-hover);
       border-color: var(--text-highlight);
-      transform: translateX(5px);
+      transform: translateX(3px);
     }
 
     .method-card:hover::after { transform: scaleY(1); }
@@ -380,13 +363,13 @@
       flex-direction: column;
       align-items: center;
       gap: 18px;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.18s ease, border-color 0.18s ease;
       content-visibility: auto;
       contain-intrinsic-size: 420px;
     }
 
     .qris-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
       border-color: var(--text-highlight);
     }
 
@@ -411,11 +394,6 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      transition: transform 0.3s;
-    }
-
-    .qris-img-container:hover img {
-      transform: scale(1.05);
     }
 
     .qris-overlay {
@@ -428,7 +406,7 @@
       justify-content: center;
       font-weight: bold;
       opacity: 0;
-      transition: opacity 0.2s;
+      transition: opacity 0.18s ease;
     }
 
     .qris-img-container:hover .qris-overlay {
@@ -466,8 +444,8 @@
       right: 25px;
       z-index: 100;
       background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
       color: var(--text-main);
@@ -478,11 +456,11 @@
       gap: 10px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+      transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
     }
 
     .theme-toggle:hover {
-      transform: scale(1.05);
+      transform: scale(1.04);
       border-color: var(--text-highlight);
     }
 
@@ -504,7 +482,7 @@
       font-size: 15px;
       opacity: 0;
       pointer-events: none;
-      transition: transform 0.3s, opacity 0.3s;
+      transition: transform 0.22s ease, opacity 0.22s ease;
       z-index: 999;
       display: flex;
       align-items: center;
@@ -527,7 +505,7 @@
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s;
+      transition: opacity 0.18s ease;
     }
 
     .lightbox.show {
@@ -541,8 +519,8 @@
       border-radius: 24px;
       max-width: 90vw;
       max-height: 80vh;
-      transform: scale(0.9);
-      transition: transform 0.2s;
+      transform: scale(0.96);
+      transition: transform 0.18s ease;
       position: relative;
     }
 
@@ -571,7 +549,7 @@
       justify-content: center;
       font-size: 24px;
       cursor: pointer;
-      transition: background-color 0.2s, color 0.2s;
+      transition: background-color 0.18s ease, color 0.18s ease;
     }
 
     .lightbox-close:hover {
@@ -609,9 +587,8 @@
       .container { padding: 90px 15px 30px; }
       .glass-panel {
         padding: 25px 20px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        background: var(--glass-bg);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
       .method-card {
         flex-direction: column;
@@ -625,17 +602,21 @@
         right: 15px;
         padding: 8px 15px;
         font-size: 12px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
-      #bg-animate::after { animation: none; }
       .method-card:hover,
       .qris-card:hover,
       .btn-wa:hover,
       .theme-toggle:hover {
         transform: none;
       }
-      .qris-img-container img { transition: none; }
+      .qris-img-container:hover img {
+        transform: none;
+      }
+      .qris-overlay {
+        display: none;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -646,7 +627,6 @@
         transition: none !important;
         scroll-behavior: auto !important;
       }
-      #bg-animate::after { animation: none !important; }
     }
   </style>
 </head>
@@ -866,13 +846,13 @@
 
       if (!isDeleting && charIndex === currentQuote.length) {
         isDeleting = true;
-        typeTimer = setTimeout(typeWriter, 2000);
+        typeTimer = setTimeout(typeWriter, 1800);
       } else if (isDeleting && charIndex === 0) {
         isDeleting = false;
         quoteIndex = (quoteIndex + 1) % quotes.length;
-        typeTimer = setTimeout(typeWriter, 500);
+        typeTimer = setTimeout(typeWriter, 400);
       } else {
-        typeTimer = setTimeout(typeWriter, isDeleting ? 30 : 60);
+        typeTimer = setTimeout(typeWriter, isDeleting ? 28 : 55);
       }
     }
 
@@ -917,7 +897,7 @@
       document.getElementById("toast-text").textContent = message;
       toast.classList.add("show");
       clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2500);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
     }
 
     function openLightbox(imgSrc, title, nmid, triggerElement) {
@@ -935,4 +915,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
