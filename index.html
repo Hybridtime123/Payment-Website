@@ -3,619 +3,488 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fadhil Store - Secure Checkout</title>
+  <title>Fadhil Store - Payment Gateway</title>
   <style>
     :root {
-      --bg-color: #f4f5f7;
-      --card-bg: #ffffff;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border-color: #e5e7eb;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success: #10b981;
-      --danger: #ef4444;
-      --dana-blue: #118EEA;
-      --gopay-blue: #00AED6;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --glass-bg: rgba(18, 18, 28, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --text-highlight: #38bdf8;
+      --accent-color: #38bdf8;
+      --accent-btn: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      --card-inner: rgba(255, 255, 255, 0.05);
+      --method-hover: rgba(56, 189, 248, 0.1);
+      --qris-overlay: rgba(0, 0, 0, 0.85);
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-text: #34d399;
+      --page-bg: #05050a;
+      --bg-animate-bg: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #05050a 100%);
+      --star-opacity: 1;
+      --cloud-opacity: 0;
     }
 
-    [data-theme="dark"] {
-      --bg-color: #111827;
-      --card-bg: #1f2937;
-      --text-main: #f9fafb;
-      --text-muted: #9ca3af;
-      --border-color: #374151;
-      --primary: #3b82f6;
-      --primary-hover: #60a5fa;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    [data-theme="light"] {
+      --glass-bg: rgba(255, 255, 255, 0.35);
+      --glass-border: rgba(255, 255, 255, 0.55);
+      --glass-shadow: 0 6px 18px rgba(31, 38, 135, 0.12);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-highlight: #2563eb;
+      --accent-color: #2563eb;
+      --accent-btn: linear-gradient(135deg, #3b82f6, #2563eb);
+      --card-inner: rgba(255, 255, 255, 0.5);
+      --method-hover: rgba(255, 255, 255, 0.85);
+      --qris-overlay: rgba(255, 255, 255, 0.9);
+      --success-bg: #d1fae5;
+      --success-text: #059669;
+      --page-bg: #e0f2fe;
+      --bg-animate-bg: linear-gradient(180deg, #60a5fa 0%, #bae6fd 50%, #e0f2fe 100%);
+      --star-opacity: 0;
+      --cloud-opacity: 1;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       color: var(--text-main);
-      line-height: 1.5;
+      background: var(--page-bg);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       -webkit-font-smoothing: antialiased;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      text-rendering: optimizeLegibility;
     }
 
-    .navbar {
-      background-color: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: var(--shadow-sm);
+    #bg-animate { position: fixed; inset: 0; z-index: -1; background: var(--bg-animate-bg); pointer-events: none; }
+    #bg-animate::before, #bg-animate::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none; background-repeat: repeat; transition: opacity 0.2s ease;
+    }
+    #bg-animate::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 500 500'%3E%3Ccircle cx='40' cy='60' r='1.4' fill='%23ffffff' fill-opacity='0.95'/%3E%3Ccircle cx='120' cy='180' r='1.1' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='210' cy='90' r='1.8' fill='%23ffffff' fill-opacity='0.9'/%3E%3Ccircle cx='310' cy='230' r='1.2' fill='%23ffffff' fill-opacity='0.75'/%3E%3Ccircle cx='420' cy='140' r='1.5' fill='%23ffffff' fill-opacity='0.85'/%3E%3Ccircle cx='80' cy='320' r='1.3' fill='%23ffffff' fill-opacity='0.7'/%3E%3Ccircle cx='260' cy='380' r='1.7' fill='%23ffffff' fill-opacity='0.9'/%3E%3Ccircle cx='390' cy='360' r='1.1' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='470' cy='260' r='1.4' fill='%23ffffff' fill-opacity='0.85'/%3E%3C/svg%3E");
+      background-size: 500px 500px; opacity: var(--star-opacity);
+    }
+    #bg-animate::after {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='400' viewBox='0 0 700 400'%3E%3Cpath d='M110 165c0-22 18-40 40-40 14 0 27 7 34 18 5-2 10-3 16-3 19 0 35 14 39 32 18 2 32 17 32 36 0 20-16 36-36 36H147c-22 0-40-18-40-40 0-17 10-31 24-39-13-2-21-12-21-24z' fill='%23ffffff' fill-opacity='0.55'/%3E%3Cpath d='M420 255c0-20 16-36 36-36 13 0 25 6 31 16 5-1 9-2 14-2 17 0 32 12 35 28 16 2 28 15 28 32 0 18-14 32-32 32H454c-20 0-36-16-36-36 0-15 9-28 21-34-11-2-19-11-19-20z' fill='%23ffffff' fill-opacity='0.5'/%3E%3Cpath d='M560 125c0-16 13-29 29-29 10 0 20 5 25 13 4-1 7-1 11-1 14 0 26 10 29 23 13 1 23 12 23 26 0 14-11 25-25 25h-72c-16 0-29-13-29-29 0-12 7-22 17-27-9-2-15-8-15-18z' fill='%23ffffff' fill-opacity='0.42'/%3E%3C/svg%3E");
+      background-size: 700px 400px; opacity: var(--cloud-opacity);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 18px;
-    }
+    .container { max-width: 720px; margin: 0 auto; padding: 80px 20px 40px; position: relative; z-index: 1; content-visibility: auto; contain-intrinsic-size: 1200px; }
+    .glass-panel { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; padding: 35px; margin-bottom: 25px; opacity: 0; transform: translateY(10px); animation: slideUpFade 0.35s ease-out forwards; overflow: hidden; position: relative; content-visibility: auto; contain-intrinsic-size: 420px; }
+    .delay-1 { animation-delay: 0.05s; } .delay-2 { animation-delay: 0.12s; } .delay-3 { animation-delay: 0.18s; }
+    @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
 
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--primary);
-      color: white;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
+    .hero-header, .hero-footer, .section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .hero-header, .section-header { margin-bottom: 25px; }
+    .badge-secure, .badge-active, .method-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+    .badge-secure { background: var(--card-inner); border: 1px solid var(--glass-border); }
+    .badge-active { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-text); }
+    .dot-pulse { width: 8px; height: 8px; background-color: var(--success-text); border-radius: 50%; display: block; animation: pulseGreen 2s infinite; }
+    @keyframes pulseGreen { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.4); } }
 
-    .theme-toggle {
-      background: none;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
+    .main-title { font-size: clamp(34px, 8vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 25px; background: linear-gradient(135deg, var(--text-main), var(--text-highlight)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .typing-container { font-size: 16px; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; }
+    .cursor { display: inline-block; width: 3px; height: 18px; background: var(--text-highlight); margin-left: 5px; animation: blink 0.8s infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .date-badge { font-family: monospace; font-size: 14px; font-weight: bold; padding: 8px 16px; border-radius: 8px; background: var(--card-inner); border: 1px solid var(--glass-border); }
+    .section-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
+    .section-desc { font-size: 14px; color: var(--text-muted); }
 
-    .theme-toggle:hover {
-      background: var(--bg-color);
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; border: none; transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease, color 0.18s ease; }
+    .btn-wa { background: var(--accent-btn); color: #fff; } .btn-wa:hover { transform: translateY(-2px); }
+    .btn-outline { background: var(--card-inner); color: var(--text-main); border: 1px solid var(--glass-border); }
+    .btn-outline:hover { background: var(--text-main); color: var(--page-bg); transform: translateY(-1px); }
 
-    .theme-toggle svg {
-      width: 20px;
-      height: 20px;
-    }
+    .method-list { display: flex; flex-direction: column; gap: 16px; }
+    .method-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; background: var(--card-inner); border: 1px solid var(--glass-border); position: relative; overflow: hidden; transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease; content-visibility: auto; contain-intrinsic-size: 140px; }
+    .method-card::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent-color); transform: scaleY(0); transition: transform 0.18s ease; }
+    .method-card:hover { background: var(--method-hover); border-color: var(--text-highlight); transform: translateX(3px); }
+    .method-card:hover::after { transform: scaleY(1); }
 
-    .icon-sun { display: none; }
-    [data-theme="dark"] .icon-sun { display: block; }
-    [data-theme="dark"] .icon-moon { display: none; }
+    .method-info { display: flex; flex-direction: column; gap: 8px; }
+    .method-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand-logo { display: block; object-fit: contain; }
+    .method-logo { width: 88px; height: 28px; background: transparent; }
+    .method-logo-gopay { width: 78px; height: 28px; }
+    .method-logo-qris { width: 90px; height: 34px; }
+    .method-name { font-size: 18px; font-weight: 800; }
+    .method-number { font-family: monospace; font-size: 20px; font-weight: bold; color: var(--text-highlight); }
+    .method-user { font-size: 14px; color: var(--text-muted); }
 
-    .container {
-      max-width: 640px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+    .guide-box { margin-top: 30px; padding: 25px; border-radius: 16px; background: var(--card-inner); border: 1px dashed var(--glass-border); }
+    .guide-box h4 { margin-bottom: 15px; font-size: 16px; font-weight: 800; }
+    .guide-list { padding-left: 20px; font-size: 14px; color: var(--text-muted); display: flex; flex-direction: column; gap: 12px; }
+    .guide-alert { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #eab308; font-size: 13px; font-weight: 600; display: flex; gap: 10px; align-items: flex-start; }
 
-    .page-header {
-      margin-bottom: 24px;
-    }
+    .qris-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+    .qris-card { background: var(--card-inner); border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; align-items: center; gap: 18px; transition: transform 0.18s ease, border-color 0.18s ease; content-visibility: auto; contain-intrinsic-size: 420px; }
+    .qris-card:hover { transform: translateY(-3px); border-color: var(--text-highlight); }
+    .qris-label { font-weight: 800; font-size: 16px; text-align: center; }
+    .qris-brand { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .qris-img-container { width: 100%; aspect-ratio: 1; border-radius: 16px; background: #fff; padding: 10px; position: relative; overflow: hidden; cursor: zoom-in; }
+    .qris-img-container img { width: 100%; height: 100%; object-fit: contain; }
+    .qris-overlay { position: absolute; inset: 0; background: var(--qris-overlay); color: var(--text-main); display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.18s ease; }
+    .qris-img-container:hover .qris-overlay { opacity: 1; }
+    .qris-actions { display: flex; width: 100%; gap: 10px; }
+    .qris-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+    .qris-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--card-inner); padding: 20px; color: var(--text-main); }
 
-    .page-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    .theme-toggle { position: fixed; top: 25px; right: 25px; z-index: 100; background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); color: var(--text-main); padding: 10px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer; transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease; }
+    .theme-toggle:hover { transform: scale(1.04); border-color: var(--text-highlight); }
+    .theme-toggle .icon-moon { display: block; } .theme-toggle .icon-sun { display: none; } [data-theme="light"] .theme-toggle .icon-moon { display: none; } [data-theme="light"] .theme-toggle .icon-sun { display: block; }
 
-    .page-desc {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
+    .toast { position: fixed; bottom: 40px; left: 50%; transform: translate(-50%, 50px); background: var(--accent-btn); color: #fff; padding: 15px 30px; border-radius: 50px; font-weight: bold; font-size: 15px; opacity: 0; pointer-events: none; transition: transform 0.22s ease, opacity 0.22s ease; z-index: 999; display: flex; align-items: center; gap: 10px; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    .checkout-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
+    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.18s ease; }
+    .lightbox.show { opacity: 1; pointer-events: auto; }
+    .lightbox-content { background: #fff; padding: 20px; border-radius: 24px; max-width: 90vw; max-height: 80vh; transform: scale(0.96); transition: transform 0.18s ease; position: relative; }
+    .lightbox.show .lightbox-content { transform: scale(1); }
+    .lightbox img { max-width: 100%; max-height: 60vh; border-radius: 12px; }
+    .lightbox-close { position: absolute; top: -50px; right: 0; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: background-color 0.18s ease, color 0.18s ease; }
+    .lightbox-close:hover { background: white; color: black; }
+    .lightbox-text { text-align: center; margin-top: 20px; color: #0f172a; }
+    .lightbox-text h3 { font-size: 22px; font-weight: 900; }
+    .lightbox-text p { font-family: monospace; font-size: 16px; font-weight: bold; margin-top: 5px; }
 
-    .checkout-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--success);
-      border-radius: 50%;
-    }
-
-    .section-p {
-      padding: 24px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .payment-method {
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      margin-bottom: 12px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .payment-method:hover {
-      border-color: var(--primary);
-    }
-
-    .method-header {
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .method-logo {
-      width: 60px;
-      height: auto;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .method-details {
-      flex: 1;
-    }
-
-    .method-name {
-      font-weight: 600;
-      font-size: 15px;
-      margin-bottom: 2px;
-    }
-
-    .method-account {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .copy-btn {
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .copy-btn:hover {
-      background: var(--border-color);
-    }
-
-    .qris-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    .qris-box {
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      background: var(--bg-color);
-    }
-
-    .qris-image-wrapper {
-      background: white;
-      padding: 8px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      cursor: zoom-in;
-      border: 1px solid #e5e7eb;
-    }
-
-    .qris-image-wrapper img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 4px;
-    }
-
-    .qris-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .qris-nmid {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      font-family: monospace;
-    }
-
-    .instructions {
-      background: var(--bg-color);
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 24px;
-    }
-
-    .instructions h4 {
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    .instructions ol {
-      padding-left: 20px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .instructions li {
-      margin-bottom: 8px;
-    }
-
-    .btn-primary {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 14px;
-      background: var(--primary);
-      color: white;
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 15px;
-      transition: background 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
-
-    .footer {
-      text-align: center;
-      padding: 24px 0;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translate(-50%, 100px);
-      background: var(--text-main);
-      color: var(--bg-color);
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      z-index: 1000;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .toast.show {
-      transform: translate(-50%, 0);
-      opacity: 1;
-    }
-
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-      padding: 20px;
-    }
-
-    .lightbox.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .lightbox-content {
-      position: relative;
-      max-width: 400px;
-      width: 100%;
-    }
-
-    .lightbox img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      background: white;
-      padding: 16px;
-    }
-
-    .close-lightbox {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 32px;
-      cursor: pointer;
-    }
-
-    .dana-logo { fill: var(--dana-blue); }
-    .gopay-logo { fill: var(--gopay-blue); }
+    .footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; font-weight: bold; }
 
     @media (max-width: 600px) {
-      .qris-container {
-        grid-template-columns: 1fr;
-      }
-      .navbar {
-        padding: 16px;
-      }
-      .container {
-        margin: 24px auto;
-      }
+      .container { padding: 90px 15px 30px; }
+      .glass-panel { padding: 25px 20px; backdrop-filter: none; -webkit-backdrop-filter: none; }
+      .method-card { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .method-card .btn { width: 100%; }
+      .section-header .btn { width: 100%; }
+      .theme-toggle { top: 15px; right: 15px; padding: 8px 15px; font-size: 12px; backdrop-filter: none; -webkit-backdrop-filter: none; }
+      .method-card:hover, .qris-card:hover, .btn-wa:hover, .theme-toggle:hover { transform: none; }
+      .qris-img-container:hover img { transform: none; }
+      .qris-overlay { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
   </style>
 </head>
 <body>
+  <div id="bg-animate"></div>
 
-  <nav class="navbar">
-    <div class="brand">
-      <div class="brand-icon">F</div>
-      Fadhil Store
-    </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
-      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-    </button>
-  </nav>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <span id="theme-label">Ganti Mode</span>
+  </button>
 
-  <main class="container">
-    <div class="page-header">
-      <h1 class="page-title">Pembayaran</h1>
-      <p class="page-desc">Selesaikan pembayaran Anda menggunakan metode di bawah ini.</p>
-    </div>
+  <div class="container">
+    <section class="glass-panel delay-1">
+      <div class="hero-header">
+        <div class="badge-secure">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Secured Gateway
+        </div>
+        <div class="badge-active">
+          <span class="dot-pulse"></span>
+          Web Aktif (24 Jam)
+        </div>
+      </div>
 
-    <div class="checkout-card">
-      <div class="checkout-header">
+      <h1 class="main-title">Fadhil Setur Payment</h1>
+
+      <div class="hero-footer">
+        <div class="typing-container">
+          <span id="greeting-time"></span>&nbsp;<span id="typing-text"></span><span class="cursor"></span>
+        </div>
+        <div class="date-badge" id="date-display">Minggu, 24 Mei 2026</div>
+      </div>
+    </section>
+
+    <section class="glass-panel delay-2">
+      <div class="section-header">
         <div>
-          <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 2px;">Status Gateway</div>
-          <div style="font-weight: 600;">Online 24 Jam</div>
+          <h2 class="section-title">Metode Transfer</h2>
+          <p class="section-desc">Pilih metode transfer, salin nomor, dan kirim bukti bayar ke admin</p>
         </div>
-        <div class="status-badge">
-          <span class="status-dot"></span>
-          Aktif
-        </div>
-      </div>
-
-      <div class="section-p">
-        <h2 class="section-title">Transfer E-Wallet</h2>
-        
-        <div class="payment-method">
-          <div class="method-header">
-            <div class="method-logo">
-              <svg viewBox="0 0 100 28" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <path class="dana-logo" d="M22.5 4.3L15.3 23.6h-6.1L16.4 4.3h6.1zm11.2 19.3L30 14l-2.4 9.6h-5.5l4.8-19.3h6.9l3.3 8.8 2.2-8.8h5.5l-4.8 19.3h-6.3zm19.3 0l5.8-19.3h5.7L58.7 23.6H53l-8.6-13.4-3.3 13.4h-5.6l4.8-19.3h6.2l6.5 10.3zm19.3 0L65.1 4.3h6.1l3.5 9.4 6-9.4h6.1l-7.2 19.3h-7.3z"/>
-              </svg>
-            </div>
-            <div class="method-details">
-              <div class="method-name">DANA (n*** c******)</div>
-              <div class="method-account">081383327506</div>
-            </div>
-            <button class="copy-btn" onclick="copyText('081383327506', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="payment-method">
-          <div class="method-header">
-            <div class="method-logo">
-              <svg viewBox="0 0 100 28" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <path class="dana-logo" d="M22.5 4.3L15.3 23.6h-6.1L16.4 4.3h6.1zm11.2 19.3L30 14l-2.4 9.6h-5.5l4.8-19.3h6.9l3.3 8.8 2.2-8.8h5.5l-4.8 19.3h-6.3zm19.3 0l5.8-19.3h5.7L58.7 23.6H53l-8.6-13.4-3.3 13.4h-5.6l4.8-19.3h6.2l6.5 10.3zm19.3 0L65.1 4.3h6.1l3.5 9.4 6-9.4h6.1l-7.2 19.3h-7.3z"/>
-              </svg>
-            </div>
-            <div class="method-details">
-              <div class="method-name">DANA (n**** n****** p****)</div>
-              <div class="method-account">085880681643</div>
-            </div>
-            <button class="copy-btn" onclick="copyText('085880681643', this)">Salin</button>
-          </div>
-        </div>
-
-        <div class="payment-method">
-          <div class="method-header">
-            <div class="method-logo">
-              <svg viewBox="0 0 100 28" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <path class="gopay-logo" d="M12.4 22.8c-6.1 0-10.4-4.5-10.4-10.8S6.3 1.2 12.4 1.2c4.1 0 7.2 2 8.9 5.3l-3.3 2c-1.2-2.1-3-3.4-5.6-3.4-4 0-6.6 3-6.6 6.9s2.6 6.9 6.6 6.9c2.9 0 4.9-1.5 5.8-4.2H12v-3.7h9.8v1.6c0 5.6-4.1 10.2-9.4 10.2zm20.8 0c-6.1 0-10.5-4.5-10.5-10.8S27.1 1.2 33.2 1.2s10.5 4.5 10.5 10.8-4.4 10.8-10.5 10.8zm0-3.9c3.9 0 6.6-2.9 6.6-6.9s-2.7-6.9-6.6-6.9-6.6 2.9-6.6 6.9 2.7 6.9 6.6 6.9zm19.9 3.9c-2.4 0-4.5-1-5.6-2.9v10.9h-3.9V1.6h3.9v2.8c1.1-1.9 3.2-2.9 5.6-2.9 5.1 0 9.1 4.2 9.1 10.6s-4 10.7-9.1 10.7zm-.9-3.9c3.8 0 6.2-3 6.2-6.8s-2.4-6.8-6.2-6.8c-3.7 0-6.2 3-6.2 6.8s2.5 6.8 6.2 6.8zm21.4 3.9c-4.4 0-7.3-2.1-8.5-5.2l3.4-1.7c.8 1.8 2.5 3.3 5.1 3.3 2.7 0 4.1-1.2 4.1-3.2v-1.6c-1.1 1.7-3.1 2.8-5.5 2.8-4.7 0-8.5-3.8-8.5-9s3.8-9 8.5-9c2.4 0 4.4 1.1 5.5 2.8V1.6h3.9v13.5c0 4.7-3.2 7.7-8 7.7zm.9-15.3c-3.4 0-5.8 2.6-5.8 5.7 0 3.2 2.4 5.7 5.8 5.7s5.8-2.6 5.8-5.7c0-3.2-2.4-5.7-5.8-5.7z"/>
-                <path class="gopay-logo" d="M86.3 22.5l-4-10.7h4.1l2.1 6.5 2.1-6.5h4l-5.6 14.6h-3.9l1.2-3.9z"/>
-              </svg>
-            </div>
-            <div class="method-details">
-              <div class="method-name">GoPay (m******* f******)</div>
-              <div class="method-account">085257623929</div>
-            </div>
-            <button class="copy-btn" onclick="copyText('085257623929', this)">Salin</button>
-          </div>
-        </div>
-
-        <h2 class="section-title" style="margin-top: 32px;">Scan QRIS</h2>
-        
-        <div class="qris-container">
-          <div class="qris-box">
-            <div class="qris-title">QRIS Utama</div>
-            <div class="qris-nmid">ID1025414765624</div>
-            <div class="qris-image-wrapper" onclick="openLightbox('qris1.png')">
-              <img src="qris1.png" alt="QRIS Fadhil Store" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNlNWU3ZWIiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOWNhM2FmIj5HQU1CQVIgQkVMVU0gQURBPC90ZXh0Pjwvc3ZnPg=='">
-            </div>
-            <button class="copy-btn" style="width: 100%; justify-content: center;" onclick="copyText('ID1025414765624', this)">Salin NMID</button>
-          </div>
-
-          <div class="qris-box">
-            <div class="qris-title">QRIS 2 (Stok Mas Ses)</div>
-            <div class="qris-nmid">ID1026494189180</div>
-            <div class="qris-image-wrapper" onclick="openLightbox('qris2.png')">
-              <img src="qris2.png" alt="QRIS Alternatif" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNlNWU3ZWIiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOWNhM2FmIj5HQU1CQVIgQkVMVU0gQURBPC90ZXh0Pjwvc3ZnPg=='">
-            </div>
-            <button class="copy-btn" style="width: 100%; justify-content: center;" onclick="copyText('ID1026494189180', this)">Salin NMID</button>
-          </div>
-        </div>
-
-        <div class="instructions">
-          <h4>Cara Pembayaran</h4>
-          <ol>
-            <li>Salin nomor rekening/e-wallet atau scan QRIS di atas.</li>
-            <li>Lakukan transfer sesuai dengan nominal pesanan.</li>
-            <li>Simpan bukti transfer / screenshot layar.</li>
-            <li>Klik tombol konfirmasi di bawah untuk mengirim bukti.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div style="padding: 24px; border-top: 1px solid var(--border-color);">
-        <a href="https://wa.me/6285257623929" target="_blank" rel="noopener" class="btn-primary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          Konfirmasi Pembayaran
+        <a class="btn btn-wa" href="https://wa.me/6285257623929" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Konfirmasi WA
         </a>
       </div>
-    </div>
+
+      <div class="method-list">
+        <div class="method-card">
+          <div class="method-info">
+            <div class="method-head">
+              <img class="brand-logo method-logo" src="https://a.m.dana.id/resource/imgs/common/dana-full-white.svg" alt="DANA">
+              <span class="method-tag">DANA</span>
+            </div>
+            <span class="method-name">Dana Transfer</span>
+            <span class="method-number">081383327506</span>
+            <span class="method-user">A.N: n*** c******</span>
+          </div>
+          <button class="btn btn-outline" onclick="copyText('081383327506', 'Nomor Dana', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Salin Nomor
+          </button>
+        </div>
+
+        <div class="method-card">
+          <div class="method-info">
+            <div class="method-head">
+              <img class="brand-logo method-logo method-logo-gopay" src="https://gopay-website.al-gp-id-p.cdn.gtflabs.io/assets/img/homepage/gopay.webp" alt="GoPay">
+              <span class="method-tag">GOPAY</span>
+            </div>
+            <span class="method-name">Gopay Transfer</span>
+            <span class="method-number">085257623929</span>
+            <span class="method-user">A.N: m******* f******</span>
+          </div>
+          <button class="btn btn-outline" onclick="copyText('085257623929', 'Nomor Gopay', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Salin Nomor
+          </button>
+        </div>
+      </div>
+
+      <div class="guide-box">
+        <h4>Cara Pembayaran:</h4>
+        <ol class="guide-list">
+          <li>Salin nomor tujuan transfer diatas (atau gunakan QRIS di bawah)</li>
+          <li>Lakukan transfer via m-banking atau e-wallet dengan nominal yang sesuai</li>
+          <li>Klik tombol <strong>"Konfirmasi WA"</strong> untuk mengirim bukti pembayaran</li>
+        </ol>
+        <div class="guide-alert">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y1="8"/></svg>
+          <div>Proses verifikasi manual, mohon menunggu sampai admin konfirmasi (kurang dari 1 jam)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass-panel delay-3">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">QRIS</h2>
+          <p class="section-desc">Scan via aplikasi pembayaran atau klik untuk memperbesar penuh</p>
+        </div>
+      </div>
+
+      <div class="qris-grid">
+        <div class="qris-card">
+          <div class="qris-brand">
+            <img class="brand-logo method-logo-qris" src="https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/PublishingImages/default/Visual-QRIS-Pengantar.jpg" alt="QRIS">
+            <div class="qris-label">QRIS Utama - Fadhil Store</div>
+          </div>
+          <div class="qris-img-container" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this)">
+            <img src="qris1.png" alt="QRIS Fadhil Store" loading="lazy" decoding="async" onerror="showFallback(this, 'qris1.png')">
+            <div class="qris-overlay">🔍 Perbesar</div>
+          </div>
+          <div class="qris-actions">
+            <button class="btn btn-outline" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
+            <button class="btn btn-outline" onclick="copyText('ID1025414765624', 'NMID Fadhil Store', this)">Salin NMID</button>
+          </div>
+        </div>
+
+        <div class="qris-card">
+          <div class="qris-brand">
+            <img class="brand-logo method-logo-qris" src="https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/PublishingImages/default/QRIS-sebagai-Merchant.png" alt="QRIS">
+            <div class="qris-label">QRIS 2 - Warung Stok Mas Ses</div>
+          </div>
+          <div class="qris-img-container" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this)">
+            <img src="qris2.png" alt="QRIS Alternatif" loading="lazy" decoding="async" onerror="showFallback(this, 'qris2.png')">
+            <div class="qris-overlay">🔍 Perbesar</div>
+          </div>
+          <div class="qris-actions">
+            <button class="btn btn-outline" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
+            <button class="btn btn-outline" onclick="copyText('ID1026494189180', 'NMID Alternatif', this)">Salin NMID</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <div class="footer">
-      &copy; <span id="current-year"></span> Fadhil Store. All rights reserved.<br>
-      CS: +62 852-5762-3929
+      © By Fadhil | Last Update : <span id="last-update-display"></span> | Contact : +62 852-5762-3929
     </div>
-  </main>
+  </div>
 
-  <div id="toast" class="toast">Disalin ke clipboard</div>
+  <div id="toast" class="toast">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toast-text">Berhasil disalin</span>
+  </div>
 
   <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <div class="lightbox-content" onclick="event.stopPropagation()">
-      <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
-      <img id="lightbox-img" src="" alt="QRIS Besar">
+      <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+      <img id="lightbox-img" src="" alt="Full QRIS">
+      <div class="lightbox-text">
+        <h3 id="lightbox-title">Merchant Title</h3>
+        <p id="lightbox-nmid">NMID: -</p>
+      </div>
     </div>
   </div>
 
   <script>
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-
-    const storedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', storedTheme);
-
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
+    function getStoredTheme() {
+      const saved = localStorage.getItem('theme');
+      return saved === 'light' ? 'light' : 'dark';
     }
 
-    function copyText(text, btnElement) {
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      if (theme === 'light') {
+        html.setAttribute('data-theme', 'light');
+      } else {
+        html.removeAttribute('data-theme');
+      }
+      const themeLabel = document.getElementById('theme-label');
+      if (themeLabel) themeLabel.textContent = theme === 'light' ? 'Mode Putih' : 'Ganti Mode';
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    }
+
+    function formatTanggal(date) {
+      const hari = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+      const bulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+      const h = hari[date.getDay()];
+      const d = date.getDate();
+      const m = bulan[date.getMonth()];
+      const y = date.getFullYear();
+      return `${h.charAt(0).toUpperCase() + h.slice(1)}, ${d} ${m.charAt(0).toUpperCase() + m.slice(1)} ${y}`;
+    }
+
+    function formatJam(date) {
+      return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function setGreeting() {
+      const hours = new Date().getHours();
+      let greeting = 'Halo,';
+      if (hours >= 4 && hours < 11) greeting = 'Selamat pagi,';
+      else if (hours >= 11 && hours < 15) greeting = 'Selamat siang,';
+      else if (hours >= 15 && hours < 18) greeting = 'Selamat sore,';
+      else greeting = 'Selamat malam,';
+      document.getElementById('greeting-time').textContent = greeting;
+    }
+
+    const quotes = [
+      "Dunia sementara, epep selamanya",
+      "TF-nya lebihin pls biar gw cepet kaya",
+      "Lagi error? ganti payment saja",
+      "Makasih udh buy di gw",
+      "Ada masalah? wa +62-852-5762-3929"
+    ];
+
+    let quoteIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typeTimer = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme(getStoredTheme());
+      setGreeting();
+      document.getElementById('date-display').textContent = formatTanggal(new Date());
+      document.getElementById('last-update-display').textContent = `${formatJam(new Date())} ${formatTanggal(new Date()).replace(/^[^,]+,\s*/, '')}`;
+      typeTimer = setTimeout(typeWriter, 500);
+    });
+
+    function typeWriter() {
+      const currentQuote = quotes[quoteIndex];
+      const typingElement = document.getElementById('typing-text');
+
+      if (isDeleting) {
+        typingElement.textContent = currentQuote.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        typingElement.textContent = currentQuote.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      clearTimeout(typeTimer);
+
+      if (!isDeleting && charIndex === currentQuote.length) {
+        isDeleting = true;
+        typeTimer = setTimeout(typeWriter, 1800);
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        quoteIndex = (quoteIndex + 1) % quotes.length;
+        typeTimer = setTimeout(typeWriter, 400);
+      } else {
+        typeTimer = setTimeout(typeWriter, isDeleting ? 28 : 55);
+      }
+    }
+
+    function showFallback(img, filename) {
+      const container = img.parentElement;
+      container.innerHTML = `
+        <div class="qris-fallback">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:15px; color: var(--text-highlight);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <div style="font-weight:900; font-size:16px; margin-bottom:8px;">Gambar Belum Ada</div>
+          <div style="font-size:13px; opacity:0.8;">Upload file <strong>${filename}</strong> ke folder GitHub Anda.</div>
+        </div>
+      `;
+    }
+
+    function copyText(text, label = 'Teks', button) {
       const temp = document.createElement('textarea');
       temp.value = text;
+      temp.readOnly = true;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      temp.style.left = '-9999px';
       document.body.appendChild(temp);
       temp.select();
-      
+
+      const done = () => {
+        showToast(`${label} berhasil disalin!`);
+        if (button) {
+          const oldText = button.innerHTML;
+          button.dataset.oldText = oldText;
+          button.innerHTML = 'Disalin';
+          button.disabled = true;
+          setTimeout(() => {
+            button.innerHTML = button.dataset.oldText || oldText;
+            button.disabled = false;
+          }, 1200);
+        }
+      };
+
       try {
-        document.execCommand('copy');
-        showToast();
-        
-        const originalText = btnElement.innerText;
-        btnElement.innerText = 'Tersalin!';
-        setTimeout(() => {
-          btnElement.innerText = originalText;
-        }, 2000);
+        const success = document.execCommand('copy');
+        if (success) done();
+        else navigator.clipboard.writeText(text).then(done).catch(() => showToast('Gagal menyalin, mohon salin manual.'));
       } catch (err) {
-        console.error('Failed to copy', err);
+        navigator.clipboard.writeText(text).then(done).catch(() => showToast('Gagal menyalin, mohon salin manual.'));
       }
-      
+
       document.body.removeChild(temp);
     }
 
-    let toastTimeout;
-    function showToast() {
+    function showToast(message) {
       const toast = document.getElementById('toast');
+      document.getElementById('toast-text').textContent = message;
       toast.classList.add('show');
-      
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3000);
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    function openLightbox(imgSrc) {
+    function openLightbox(imgSrc, title, nmid, triggerElement) {
+      if (triggerElement && triggerElement.querySelector('.qris-fallback')) return;
       const lightbox = document.getElementById('lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      
-      lightboxImg.src = imgSrc;
-      
-      lightboxImg.onerror = function() {
-        this.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlNWU3ZWIiLz48dGV4dCB4PSIyMDAiIHk9IjIwMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5Y2EzYWYiPkdBTUJBUiBCRUxVTSBBREE8L3RleHQ+PC9zdmc+';
-      };
-      
+      document.getElementById('lightbox-img').src = imgSrc;
+      document.getElementById('lightbox-title').textContent = title;
+      document.getElementById('lightbox-nmid').textContent = 'NMID: ' + nmid;
       lightbox.classList.add('show');
     }
 
     function closeLightbox() {
-      const lightbox = document.getElementById('lightbox');
-      lightbox.classList.remove('show');
+      document.getElementById('lightbox').classList.remove('show');
     }
   </script>
 </body>
-</html>
+  </html>
