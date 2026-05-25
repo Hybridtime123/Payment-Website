@@ -240,6 +240,20 @@
       gap: 15px;
     }
 
+    .section-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title-icon {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+    }
+
     .section-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
     .section-desc { font-size: 14px; color: var(--text-muted); }
 
@@ -767,7 +781,10 @@
     <section class="glass-panel delay-3">
       <div class="section-header">
         <div>
-          <h2 class="section-title">QRIS</h2>
+          <div class="section-title-group">
+            <img src="qrisicon.png" alt="QRIS" class="section-title-icon">
+            <h2 class="section-title">QRIS</h2>
+          </div>
           <p class="section-desc">Scan via aplikasi pembayaran atau klik untuk memperbesar penuh</p>
         </div>
       </div>
@@ -777,7 +794,7 @@
           <div class="qris-label">QRIS Utama - Fadhil Store</div>
           <div class="qris-img-container" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this)">
             <img src="qris1.png" alt="QRIS Fadhil Store" loading="lazy" decoding="async" onerror="showFallback(this, 'qris1.png')">
-            <div class="qris-overlay">Perbesar</div>
+            <div class="qris-overlay">🔍 Perbesar</div>
           </div>
           <div class="qris-actions">
             <button class="btn btn-outline" onclick="openLightbox('qris1.png', 'QRIS Utama - Fadhil Store', 'ID1025414765624', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
@@ -789,7 +806,7 @@
           <div class="qris-label">QRIS 2 - Warung Stok Mas Ses</div>
           <div class="qris-img-container" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this)">
             <img src="qris2.png" alt="QRIS Alternatif" loading="lazy" decoding="async" onerror="showFallback(this, 'qris2.png')">
-            <div class="qris-overlay">Perbesar</div>
+            <div class="qris-overlay">🔍 Perbesar</div>
           </div>
           <div class="qris-actions">
             <button class="btn btn-outline" onclick="openLightbox('qris2.png', 'QRIS 2 - Warung Stok Mas Ses', 'ID1026494189180', this.parentElement.previousElementSibling)">🔍 Lihat QRIS</button>
@@ -983,4 +1000,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
